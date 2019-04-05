@@ -1,5 +1,61 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    Привет, мир!
+    <div class="d-flex flex-wrap align-content-start justify-content-between">
+      <div class="p-2 main_block main_block_tasks">
+          <div class="h2 main_block_name">Ближайшие задания</div>
+          <div class="main_block_line"></div>
+          <div class="main_block_task">
+            <div class="main_block_date">02.04</div>
+            <div class="main_block_task_name">
+              Лабораторная работа №4 rtyrty ertyr et yert rty rety erty
+              <a class="main_block_course" href="">СиАКОД</a>
+            </div>
+          </div>
+          <div class="main_block_task">
+              <div class="main_block_date">06.04</div>
+              <div class="main_block_task_name">
+                Коллокивум
+                <a class="main_block_course" href="">Теория вероятности</a>
+              </div>
+            </div>
+            <div class="main_block_task">
+                <div class="main_block_date">07.04</div>
+                <div class="main_block_task_name">
+                  Домашняя работа. Задача.
+                  <a class="main_block_course" href="">Мат. логика</a>
+                </div>
+              </div>
+      </div>
+      <div class="p-2 main_block">
+        <div class="calendar">
+            <div class="h2 main_block_name">Календарь</div>
+            <div class="calendar_date">04.04.2019</div>
+            <div class="calendar_events">
+              <p class="ce_title">
+                <button type="button" class="btn btn-link left">left</button>
+                Четверг
+                <button type="button" class="btn btn-link right">right</button>
+              </p>
+              <div class="event_item">
+                <div class="ei_Dot dot_active"></div>
+                <div class="ei_Title">Математическая логика (практика)</div>
+                <div class="ei_Copy">8:00 - 9:30</div>
+              </div>
+              <div class="event_item">
+                <div class="ei_Dot"></div>
+                <div class="ei_Title">Математическая логика (лекция)</div>
+                <div class="ei_Copy">9:45 - 11:15</div>
+              </div>
+              <div class="event_item">
+                <div class="ei_Dot"></div>
+                <div class="ei_Title">Физичсеская культура</div>
+                <div class="ei_Copy">11:45 - 13:00</div>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="p-2">Flex item 3</div>
+    </div>
+  </div>
 {% endblock %}
