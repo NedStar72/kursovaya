@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>{{ title }}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+</head>
+<body class="bg-light">
+<form class="form-signin m-auto" method="post" action="{% url 'login' %}">
+    <div class="text-center mb-4">
+        <h1 class="h2 font-weight-normal logo">Мобильный семестр</h1>
+    </div>
+    {% csrf_token %}
+    {{ form.username }}
+    {{ form.password }}
+    <div class="custom-control custom-checkbox mr-sm-2 mb-3">
+        {{ form.checkbox }}
+        <label class="custom-control-label" for="{{ form.checkbox.id_for_label }}">Чужой компьютер</label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+    <p class="mt-5 mb-3 text-muted text-center">&copy; {{ year }}</p>
+</form>
+<script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="{% static 'js/popper.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="{% static 'js/bootstrap.min.js' %}" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>
