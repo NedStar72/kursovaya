@@ -9,13 +9,8 @@ import app.forms
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/',
-         LoginView.as_view(authentication_form=app.forms.AuthForm, redirect_authenticated_user=True, extra_context={
-             'title': 'Страница входа',
-             'year': datetime.now().year
-         })
-         , name="login"),
-    path('logout/',
-         LogoutView.as_view(), name='logout'),
+    path('registration/', app.view.RegisterFormView.as_view()),
+    path('login/', view.MyLoginView.as_view(),  name="login"),
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('', view.home, name='home'),
 ]

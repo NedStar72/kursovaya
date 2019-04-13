@@ -10,12 +10,26 @@
 </head>
 <body class="bg-light">
 <form class="form-signin m-auto" method="post" action="{% url 'login' %}">
-    <div class="text-center mb-4">
-        <h1 class="h2 font-weight-normal logo">Мобильный семестр</h1>
+    <div class="text-center {% if form.non_field_errors %}mb-3{% else %}mb-4{% endif %}">
+        <h1 class="h2 font-weight-normal logo mb-0">Мобильный семестр</h1>
     </div>
     {% csrf_token %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+    <strong>Ошибка!</strong> {{ error }}
+    </div>
+    {% endfor %}
+    {% load widget_tweaks %}
+    {% if form.username.errors %}
+    {% render_field form.username class+="is-invalid" %}
+    {% else %}
     {{ form.username }}
+    {% endif %}
+    {% if form.password.errors %}
+    {% render_field form.password class+="is-invalid" %}
+    {% else %}
     {{ form.password }}
+    {% endif %}
     <div class="custom-control custom-checkbox mr-sm-2 mb-3">
         {{ form.checkbox }}
         <label class="custom-control-label" for="{{ form.checkbox.id_for_label }}">Чужой компьютер</label>
