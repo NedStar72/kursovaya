@@ -7,46 +7,80 @@
     <meta name="description" content="Описание" />
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
-<div class="container">
-  <a class="navbar-brand h1 mb-0" href="#">Мобильный семестр</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Dropdown
+<nav class="navbar navbar-expand-md navbar-light bg-light sticky-top border-bottom mb-3">
+    <div class="container justify-content-start position-relative">
+    <button class="navbar-toggler navbar-toggler-left border-0 pl-0 pr-0 mr-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand h1 mb-0 ml-0" href="{% url 'home' %}">Мобильный семестр</a>
+    <div class="collapse navbar-collapse pl-3 pl-md-0" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'home' %}">Главная</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Задания
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
+                    <a class="dropdown-item" href="#">Ближайшие</a>
+                    <a class="dropdown-item" href="#">Задолжности</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Все</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Ведомость</a>
+            </li>
+            <li class="nav-item dropdown d-md-none">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Дмитрий Торгашин
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
+                    <a class="dropdown-item" href="#">Мой профиль</a>
+                    <a class="dropdown-item" href="#">Найстройки</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="position-absolute ava dropdown pr-3 d-none d-md-block">
+        <a class="ava text-secondary navbar-light text-decoration-none dropdown-toggle" id="avaLink" href="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Дмитрий Торгашин
+            <img class="ava" src="https://pbs.twimg.com/profile_images/885521274608504832/l1YjvWoq_400x400.jpg" alt="ava">
         </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
+        <div class="dropdown-menu" aria-labelledby="avaLink">
+            <a class="dropdown-item" href="#">Мой профиль</a>
+            <a class="dropdown-item" href="#">Настройки</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
         </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
-    </ul>
-  </div>
-</div>
+        <a class="notice-count text-decoration-none" href="">99</a>
+    </div>
+    </div>
 </nav>
-<div class="content container">
-    {% block content %}
-    {% endblock %}
-    <footer class="container"> Мобильный семестр (с) 2019 / Днище</footer>
+<div class="container">
+    <h2 class="font-weight-normal mb-3 text-left">{{ title }}</h2>
+    <div class="row no-gutters">
+        <div class="col-12 col-lg-3 pb-3 pb-lg-0">
+            {% block rt-block %}
+            {% endblock %}
+        </div>
+        <div class="col-12 col-lg-9 order-lg-first pt-0 pb-0 pr-md-3">
+            {% block lb-block %}
+            {% endblock %}
+        </div>
+    </div>
 </div>
+<footer class="container mt-3">
+    <div class="border-top p-2">
+        Мобильный семестр &copy; {{ year }} / Днище
+    </div>
+</footer>
 <script src="{% static 'js/jquery-3.3.1.slim.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="{% static 'js/popper.js' %}" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="{% static 'js/bootstrap.min.js' %}" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
