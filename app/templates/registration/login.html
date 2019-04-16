@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
 </head>
 <body class="bg-light h-100 d-flex">
-<form class="form-signin m-auto p-3 p-md-0" method="post" action="{% url 'login' %}">
+<form class="form-signin m-auto container" method="post" action="{% url 'login' %}">
     <div class="text-center {% if form.non_field_errors %}mb-3{% else %}mb-4{% endif %}">
         <h1 class="h2 font-weight-normal logo mb-0">Мобильный семестр</h1>
     </div>

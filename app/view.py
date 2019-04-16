@@ -1,27 +1,29 @@
-from django.contrib.auth.decorators import login_required
-from django.template import RequestContext
-from django.http import HttpRequest
-from django.http import Http404
-from django.shortcuts import render
 from datetime import datetime
+from django.http import Http404
+from django.http import HttpRequest
+from django.template import RequestContext
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.contrib.auth import login
+
+from django.views.generic.base import TemplateView
+from django.contrib.auth.decorators import login_required, permission_required
+from django.views.generic.edit import FormView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+
+from django.contrib.auth.forms import UserCreationForm
 import app.forms
 
 
-@login_required
-def home(request):
-    assert isinstance(request, HttpRequest)  # проверка исходных данных
-    return render(
-        request,
-        'home.html',
-        {
-            'title': 'Главная страница',
-            'year': datetime.now().year
-        }
-    )
+class HomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'home.html'
 
-
-from django.views.generic.edit import FormView
-from django.contrib.auth.forms import UserCreationForm
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data()
+        context['title'] = 'Главная странциа'
+        context['year'] = datetime.now().year
+        return context
 
 
 class RegisterFormView(FormView):
@@ -40,11 +42,6 @@ class RegisterFormView(FormView):
 
         # Вызываем метод базового класса
         return super(RegisterFormView, self).form_valid(form)
-
-
-from django.contrib.auth.views import LoginView
-from django.contrib.auth import login
-from django.http import HttpResponseRedirect
 
 
 class MyLoginView(LoginView):

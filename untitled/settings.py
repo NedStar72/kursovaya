@@ -70,14 +70,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'untitled.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'testdbdjango',
+        'NAME': 'testdb',
         'USER': 'postgres',
         'PASSWORD': 'qwer123456789',
         'HOST': '127.0.0.1',
@@ -85,10 +81,8 @@ DATABASES = {
     }
 }
 
-
 #       'ENGINE': 'django.db.backends.sqlite3',
 #       'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -130,3 +124,8 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = LOGIN_URL
+
+MEDIA_URL = '/files/'
+MEDIA_ROOT = '/files/'
+
+AUTH_USER_MODEL = 'app.User'

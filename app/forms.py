@@ -15,7 +15,7 @@ class AuthForm(AuthenticationForm):
                                    'placeholder': 'Пароль',
                                    'autocomplete': '',
                                }))
-    checkbox = forms.BooleanField(initial=True, required=False, widget=forms.CheckboxInput({
+    checkbox = forms.BooleanField(initial=False, required=False, widget=forms.CheckboxInput({
         'id': 'rememberId',
         'class': 'custom-control-input'
     }))
