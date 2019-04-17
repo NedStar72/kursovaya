@@ -6,9 +6,9 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    patronymic = models.CharField(max_length=63, blank=True)
-    is_student = models.BooleanField('student status', default=False)
-    is_teacher = models.BooleanField('teacher status', default=False)
+    patronymic = models.CharField(max_length=63, blank=True, verbose_name='Отчество')
+    is_student = models.BooleanField(default=False, verbose_name='Студент')
+    is_teacher = models.BooleanField(default=False, verbose_name='Преподаватель')
     # добавить другие поля для инфы?
 
 
@@ -30,9 +30,6 @@ class DayOfTheWeekField(models.CharField):
         kwargs['max_length'] = 1
         super(DayOfTheWeekField, self).__init__(*args, **kwargs)
 
-    class Meta:
-        verbose_name = _(u'День недели')
-
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -41,7 +38,8 @@ class Student(models.Model):
 
     class Meta:
         verbose_name = _(u'Студент')
-        default_related_name = _(u'Студенты')
+        verbose_name_plural = _(u'Студенты')
+        default_related_name = 'students'
         ordering = ['specialty', 'group']
         db_table = 'Students'
 
@@ -52,7 +50,8 @@ class Teacher(models.Model):
 
     class Meta:
         verbose_name = _(u'Преподаватель')
-        default_related_name = _(u'Преподаватели')
+        verbose_name_plural = _(u'Преподаватели')
+        default_related_name = 'teachers'
         db_table = 'Teachers'
 
 
@@ -61,7 +60,8 @@ class Subject(models.Model):
 
     class Meta:
         verbose_name = _(u'Предмет')
-        default_related_name = _(u'Предметы')
+        verbose_name_plural = _(u'Предметы')
+        default_related_name = 'subjects'
         db_table = 'Subjects'
 
 
@@ -74,8 +74,8 @@ class TeacherSubject(models.Model):
     # Надо добавить время начала предмета и время окончания? (что-то вроде продолжительности курса)
 
     class Meta:
-        verbose_name = _(u'Преподаваемый_предмет')
-        default_related_name = _(u'Преподаваемые_предметы')
+        verbose_name = _(u'Преподаваемый предмет')
+        verbose_name_plural = _(u'Преподаваемые предметы')
         ordering = ['subject', 'teacher', 'dayOfWeek']
         db_table = 'Teacher_Subject'
 
@@ -85,8 +85,8 @@ class StudentTeacherSubject(models.Model):
     teacher_subject = models.ForeignKey(TeacherSubject, null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        verbose_name = _(u'Студент_преподаваемого_предмета')
-        default_related_name = _(u'Студенты_преподаваемого_предмета')
+        verbose_name = 'Студент преподаваемого предмета'
+        verbose_name_plural = 'Студенты преподаваемых предметов'
         ordering = ['teacher_subject', 'student']
         db_table = 'Student_TeacherSubject'
 
@@ -100,7 +100,8 @@ class Task(models.Model):
 
     class Meta:
         verbose_name = _(u'Задание')
-        default_related_name = _(u'Задания')
+        verbose_name_plural = _(u'Задания')
+        default_related_name = 'tasks'
         ordering = ['taught_subject', 'start_date']
         db_table = 'Tasks'
 
@@ -113,7 +114,8 @@ class Mark(models.Model):
 
     class Meta:
         verbose_name = _(u'Оценка')
-        default_related_name = _(u'Оценки')
+        verbose_name_plural = _(u'Оценки')
+        default_related_name = 'marks'
         ordering = ['date']
         db_table = 'Marks'
 
@@ -128,7 +130,7 @@ class TaskFile(models.Model):
     file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
-        verbose_name = _(u'Прикрепленный_к_заданию_файл')
-        default_related_name = _(u'Прикрепленный_к_заданию_файлы')
+        verbose_name = 'Прикрепленный к заданию файл'
+        verbose_name_plural = 'Прикрепленные к заданиям файлы'
         ordering = ['task']
         db_table = 'TaskFiles'

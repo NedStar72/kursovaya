@@ -2,6 +2,6 @@
     margin-bottom: 36px;
     font-size: 28px;
 }
-.form-signin{
-    width: 400px;
+.w400{
+    width: 400px !important;
 }
