@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 
 {% block lb-block %}
-123
+{% if user.is_student %}
+    Вы студент.
+{% else %}
+    Вы преподаватель.
+{% endif %}
 {% endblock %}
 {% block rt-block %}
 123

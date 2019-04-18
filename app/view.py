@@ -32,13 +32,12 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
 
 class RegisterView(LoginRequiredMixin, views.SuperuserRequiredMixin, TemplateView):
-    template_name = 'signup.html'
+    template_name = 'registration/signup.html'
 
     def get_context_data(self, **kwargs):
-        context = super(RegisterView, self).get_context_data()
-        context['title'] = 'Регистрация'
-        context['year'] = datetime.now().year
-        return context
+        kwargs['title'] = 'Регистрация'
+        kwargs['year'] = datetime.now().year
+        return super(RegisterView, self).get_context_data()
 
 
 class StudentRegisterFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
@@ -48,7 +47,22 @@ class StudentRegisterFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, 
     form_class = app.forms.StudentSignUpForm
 
     def get_context_data(self, **kwargs):
-        kwargs['user_type'] = 'student'
+        kwargs['title'] = 'Регистрация студента'
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('/admin')
+
+
+class TeacherRegisterFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+    success_url = "/"
+    template_name = "registration/s_registration.html"
+    model = User
+    form_class = app.forms.TeacherSignUpForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Регистрация преподавателя'
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):

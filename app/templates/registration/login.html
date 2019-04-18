@@ -1,6 +1,7 @@
 {% extends 'layout_simple.html' %}
 
 {% block block %}
+<div class="w400 container">
 <div class="text-center {% if form.non_field_errors %}mb-3{% else %}mb-4{% endif %}">
     <h1 class="h2 font-weight-normal logo mb-0">Мобильный семестр</h1>
 </div>
@@ -28,4 +29,5 @@
     </div>
     <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
 </form>
+</div>
 {% endblock%}

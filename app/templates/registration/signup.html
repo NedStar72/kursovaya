@@ -1,0 +1,10 @@
+{% extends 'layout_simple.html' %}
+
+{% block block %}
+    <div class="w400 container">
+        <h1 class="h2 font-weight-normal logo mb-4 text-center">Регистрация</h1>
+        <h5 class="font-weight-normal mb-3 text-center tex">Выберите тип пользователя</h5>
+        <a class="btn btn-lg btn-primary btn-block" href="{% url 'student_registration' %}">Студент</a>
+        <a class="btn btn-lg btn-primary btn-block btn-secondary" href="{% url 'teacher_registration' %}">Преподаватель</a>
+    </div>
+{% endblock%}

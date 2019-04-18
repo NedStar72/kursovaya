@@ -5,3 +5,6 @@
 .w400{
     width: 400px !important;
 }
+.mw700{
+    max-width: 700px !important;
+}
