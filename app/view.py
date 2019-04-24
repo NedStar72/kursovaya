@@ -21,7 +21,8 @@ import app.forms
 from braces import views
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, CreateView):
+    form_class = app.forms.TeacherSignUpForm  # изменить форму
     template_name = 'home.html'
 
     def get_context_data(self, **kwargs):

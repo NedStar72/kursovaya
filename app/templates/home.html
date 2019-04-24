@@ -3,10 +3,20 @@
 {% block lb-block %}
 {% if user.is_student %}
     Вы студент.
-{% else %}
+    2 блока + хз
+{% elif user.is_teacher %}
     Вы преподаватель.
+    Список преподаваемых курсов
+{% else %}
+    Вы админ!
 {% endif %}
 {% endblock %}
 {% block rt-block %}
-123
+{% if user.is_student %}
+    Уведомления для студента
+{% elif user.is_teacher %}
+    Форма добавления задания
+{% else %}
+    Добавление курса, предмета, пользователей
+{% endif %}
 {% endblock %}

@@ -37,7 +37,7 @@
             </li>
             <li class="nav-item dropdown d-md-none">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Дмитрий Торгашин
+                    {{ user.last_name }} {{ user.first_name }}
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
                     <a class="dropdown-item" href="#">Мой профиль</a>
@@ -50,7 +50,7 @@
     </div>
     <div class="position-absolute ava dropdown pr-3 d-none d-md-block">
         <a class="ava text-secondary navbar-light text-decoration-none dropdown-toggle" id="avaLink" href="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Дмитрий Торгашин
+            {{ user.last_name }} {{ user.first_name }}
             <img class="ava" src="https://pbs.twimg.com/profile_images/885521274608504832/l1YjvWoq_400x400.jpg" alt="ava">
         </a>
         <div class="dropdown-menu" aria-labelledby="avaLink">
