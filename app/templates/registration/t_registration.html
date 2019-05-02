@@ -1,0 +1,12 @@
+{% extends 'layout_simple.html' %}
+
+{% block block %}
+    <div class="mw700 container">
+        <h1 class="h2 font-weight-normal logo mb-4 text-center">{{ title }}</h1>
+        <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-lg btn-primary btn-block mt-4">Создать</button>
+        </form>
+    </div>
+{% endblock%}

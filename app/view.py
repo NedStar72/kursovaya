@@ -15,7 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, Subject, Specialty, Group
 import app.forms
 
 from braces import views
@@ -30,6 +30,43 @@ class HomeView(LoginRequiredMixin, CreateView):
         context['title'] = 'Главная странциа'
         context['year'] = datetime.now().year
         return context
+
+
+class SubjectAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+    success_url = "/"
+    template_name = "subject_add.html"
+    model = Subject
+    form_class = app.forms.SubjectAddForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Добавить предмет'
+        return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('/')
+
+
+class SpecialityAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+    success_url = "/"
+    template_name = "subject_add.html"
+    model = Specialty
+    form_class = app.forms.SpecialtyAddForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Добавить направление'
+        return super().get_context_data(**kwargs)
+
+
+class GroupAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+    success_url = "/"
+    template_name = "group_add.html"
+    model = Group
+    form_class = app.forms.GroupAddForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Добавить группу'
+        return super().get_context_data(**kwargs)
 
 
 class RegisterView(LoginRequiredMixin, views.SuperuserRequiredMixin, TemplateView):
@@ -58,7 +95,7 @@ class StudentRegisterFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, 
 
 class TeacherRegisterFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
     success_url = "/"
-    template_name = "registration/s_registration.html"
+    template_name = "registration/t_registration.html"
     model = User
     form_class = app.forms.TeacherSignUpForm
 

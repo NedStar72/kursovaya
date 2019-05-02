@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary mb-3">Создать</button>
+</form>
+<script type="text/javascript">
+// Material Select Initialization
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
+});
+</script>
+{% endblock %}
+{% block rt-block %}
+
+{% endblock %}

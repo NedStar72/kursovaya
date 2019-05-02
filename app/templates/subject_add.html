@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row align-items-end">
+        <div class="col-md-6">
+          <label for="nameInput">{{ form.name.label }}</label>
+          {{ form.name }}
+        </div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-primary mb-3">Создать</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+{% block rt-block %}
+
+{% endblock %}

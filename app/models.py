@@ -31,22 +31,49 @@ class DayOfTheWeekField(models.CharField):
         super(DayOfTheWeekField, self).__init__(*args, **kwargs)
 
 
+class Specialty(models.Model):
+    name = models.CharField(max_length=127, verbose_name=_(u'Направление'))
+
+    class Meta:
+        verbose_name = _(u'Направление')
+        verbose_name_plural = _(u'Направления')
+        default_related_name = 'Specialties'
+        db_table = 'Specialties'
+
+    def __str__(self):
+        return self.name.__str__()
+
+
+class Group(models.Model):
+    name = models.CharField(max_length=127, verbose_name=_(u'Группа'))
+    year = models.DateField(verbose_name='Год посутпления')
+    specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, verbose_name='Направление')
+
+    class Meta:
+        verbose_name = _(u'Группа')
+        verbose_name_plural = _(u'Группы')
+        default_related_name = 'groups'
+        ordering = ['specialty', 'name']
+        db_table = 'Groups'
+
+    def __str__(self):
+        return self.name.__str__()
+
+
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    group = models.CharField(max_length=127, verbose_name=_(u'Группа'))
-    specialty = models.CharField(max_length=127, verbose_name=_(u'Напревление'))
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, verbose_name='Группа')
 
     class Meta:
         verbose_name = _(u'Студент')
         verbose_name_plural = _(u'Студенты')
         default_related_name = 'students'
-        ordering = ['specialty', 'group']
+        ordering = ['group']
         db_table = 'Students'
 
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    degree = models.CharField(max_length=127, verbose_name=_(u'Степень'))
 
     class Meta:
         verbose_name = _(u'Преподаватель')

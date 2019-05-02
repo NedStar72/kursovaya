@@ -1,9 +1,8 @@
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.db import transaction
-from .models import Student, Teacher, User
+import app.models as models
 
 
 class AuthForm(AuthenticationForm):
@@ -25,29 +24,48 @@ class AuthForm(AuthenticationForm):
     }))
 
 
+class UserCreationForm(_UserCreationForm):
+    f_name = forms.CharField(max_length=256, required=True, label='Имя')
+    s_name = forms.CharField(max_length=256, required=True, label='Фамилия')
+    t_name = forms.CharField(max_length=256, required=True, label='Отчество')
+    email = forms.EmailField()
+
+    class Meta(_UserCreationForm.Meta):
+        model = models.User
+
+    @transaction.atomic
+    def save(self, commit=True):
+        user = super().save(commit)
+        user.first_name = self.cleaned_data["f_name"]
+        user.last_name = self.cleaned_data["s_name"]
+        user.patronymic = self.cleaned_data["t_name"]
+        user.EMAIL_FIELD = self.cleaned_data["email"]
+        user.save(commit)
+        return user
+
+
 class StudentSignUpForm(UserCreationForm):
-    group = forms.CharField(required=True, label='Группа')
-    specialty = forms.CharField(required=True, label='Направление')
+
+    group = forms.ChoiceField(required=True, choices=[], label='Группа')
 
     def __init__(self, *args, **kwargs):
         super(StudentSignUpForm, self).__init__(*args, **kwargs)
+        self.fields['group'].choices = [(x.pk, x.name) for x in models.Group.objects.all()]
         self.fields['username'].widget.attrs['autocomplete'] = 'new-password'
         self.fields['password1'].widget.attrs['autocomplete'] = 'new-password'
         self.fields['password2'].widget.attrs['autocomplete'] = 'new-password'
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control mb-3'
-
-    class Meta(UserCreationForm.Meta):
-        model = User
+            visible.field.widget.attrs['class'] = 'form-control'
+        self.fields['group'].widget.attrs['class'] = 'mdb-select'
+        self.fields['group'].widget.attrs['searchable'] = 'Поиск...'
 
     @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_student = True
         user.save()
-        Student.objects.create(user=user,
-                               group=self.cleaned_data.get('group'),
-                               specialty=self.cleaned_data.get('specialty'))
+        models.Student.objects.create(user=user,
+                                      group=models.Group.objects.get(pk=int(self.cleaned_data["group"])))
         return user
 
 
@@ -62,14 +80,62 @@ class TeacherSignUpForm(UserCreationForm):
         for visible in self.visible_fields():
             visible.field.widget.attrs['class'] = 'form-control mb-3'
 
-    class Meta(UserCreationForm.Meta):
-        model = User
-
     @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_teacher = True
         user.save()
-        Teacher.objects.create(user=user,
-                               degree=self.cleaned_data.get('degree'))
+        models.Teacher.objects.create(user=user,
+                                      degree=self.cleaned_data.get('degree'))
         return user
+
+
+class SubjectAddForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SubjectAddForm, self).__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs['class'] = 'form-control mb-3'
+
+    class Meta:
+        model = models.Subject
+        fields = ['name']
+        labels = {
+            'name': 'Название предмета',
+        }
+
+
+class SpecialtyAddForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Specialty
+        fields = ['name']
+        labels = {
+            'name': 'Название направления',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control mb-3',
+            }),
+        }
+
+
+class GroupAddForm(forms.ModelForm):
+    class Meta:
+        model = models.Group
+        fields = ['name', 'year', 'specialty']
+        labels = {
+            'name': 'Название группы',
+            'year': 'Год поступления',
+            'specialty': 'Направление',
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+            'year': forms.DateInput(attrs={
+                'class': 'form-control',
+            }),
+            'specialty': forms.Select(attrs={
+                'class': 'mdb-select',
+                'searchable': 'Пойск...',
+            }),
+        }
