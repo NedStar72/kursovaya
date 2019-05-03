@@ -11,6 +11,9 @@ class User(AbstractUser):
     is_teacher = models.BooleanField(default=False, verbose_name='Преподаватель')
     # добавить другие поля для инфы?
 
+    def __str__(self):
+        return self.last_name.__str__() + ' ' + self.first_name.__str__()
+
 
 DAY_OF_THE_WEEK = {
         '1': _(u'Monday'),
@@ -21,6 +24,12 @@ DAY_OF_THE_WEEK = {
         '6': _(u'Saturday'),
         '7': _(u'Sunday'),
     }
+TIME = {
+    '8:00': '08:00',
+    '9:45': '09:45',
+    '11:30': '11:30',
+    '13:00': '13:00',
+}
 
 
 class DayOfTheWeekField(models.CharField):
@@ -71,6 +80,9 @@ class Student(models.Model):
         ordering = ['group']
         db_table = 'Students'
 
+    def __str__(self):
+        return self.user.last_name.__str__() + ' ' + self.user.first_name.__str__() + ' (' + self.group.name + ')'
+
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
@@ -80,6 +92,9 @@ class Teacher(models.Model):
         verbose_name_plural = _(u'Преподаватели')
         default_related_name = 'teachers'
         db_table = 'Teachers'
+
+    def __str__(self):
+        return self.user.last_name.__str__() + ' ' + self.user.first_name.__str__()
 
 
 class Subject(models.Model):
@@ -91,11 +106,14 @@ class Subject(models.Model):
         default_related_name = 'subjects'
         db_table = 'Subjects'
 
+    def __str__(self):
+        return self.name.__str__()
+
 
 class TeacherSubject(models.Model):
     # Мб subject сделать не отдельной таблицей?
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    teacher = models.ForeignKey(Teacher, null=True, on_delete=models.SET_NULL)
     dayOfWeek = DayOfTheWeekField()
     time = models.TimeField(verbose_name=_(u'Время начала пары'))
     # Надо добавить время начала предмета и время окончания? (что-то вроде продолжительности курса)
@@ -105,6 +123,9 @@ class TeacherSubject(models.Model):
         verbose_name_plural = _(u'Преподаваемые предметы')
         ordering = ['subject', 'teacher', 'dayOfWeek']
         db_table = 'Teacher_Subject'
+
+    def __str__(self):
+        return self.subject.__str__() + ' - ' + self.teacher.__str__()
 
 
 class StudentTeacherSubject(models.Model):
@@ -116,6 +137,9 @@ class StudentTeacherSubject(models.Model):
         verbose_name_plural = 'Студенты преподаваемых предметов'
         ordering = ['teacher_subject', 'student']
         db_table = 'Student_TeacherSubject'
+
+    def __str__(self):
+        return self.student.__str__() + ' ' + self.teacher_subject.__str__()
 
 
 class Task(models.Model):
@@ -132,6 +156,9 @@ class Task(models.Model):
         ordering = ['taught_subject', 'start_date']
         db_table = 'Tasks'
 
+    def __str__(self):
+        return self.name.__str__() + ' (' + self.taught_subject.__str__() + ')'
+
 
 class Mark(models.Model):
     student = models.ForeignKey(StudentTeacherSubject, null=True, on_delete=models.SET_NULL)
@@ -145,6 +172,9 @@ class Mark(models.Model):
         default_related_name = 'marks'
         ordering = ['date']
         db_table = 'Marks'
+
+    def __str__(self):
+        return self.student.__str__() + ' ' + self.points
 
 
 def user_directory_path(instance, filename):
@@ -161,3 +191,6 @@ class TaskFile(models.Model):
         verbose_name_plural = 'Прикрепленные к заданиям файлы'
         ordering = ['task']
         db_table = 'TaskFiles'
+
+    def __str__(self):
+        return self.task.__str__() + ' ' + self.file.__str__()

@@ -14,5 +14,6 @@ urlpatterns = [
     path('subject/add', view.SubjectAddFormView.as_view(), name='add_subject'),
     path('speciality/add', view.SpecialityAddFormView.as_view(), name='add_speciality'),
     path('group/add', view.GroupAddFormView.as_view(), name='add_group'),
+    path('course/add', view.CourseAddFormView.as_view(), name='add_course'),
     path('', view.HomeView.as_view(), name='home'),
 ]

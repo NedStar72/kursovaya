@@ -15,7 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 
 from django.contrib.auth.forms import UserCreationForm
-from .models import User, Subject, Specialty, Group
+from .models import User, Subject, Specialty, Group, StudentTeacherSubject
 import app.forms
 
 from braces import views
@@ -122,3 +122,14 @@ class MyLoginView(LoginView):
         if form.cleaned_data['checkbox']:
             self.request.session.set_expiry(0)
         return super(MyLoginView, self).form_valid(form)
+
+
+class CourseAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+    success_url = "/"
+    template_name = "group_add.html"
+    model = StudentTeacherSubject
+    form_class = app.forms.CourseAddForm
+
+    def get_context_data(self, **kwargs):
+        kwargs['title'] = 'Добавить курс'
+        return super().get_context_data(**kwargs)

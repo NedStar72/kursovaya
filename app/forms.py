@@ -1,3 +1,4 @@
+import datetime
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
@@ -27,8 +28,8 @@ class AuthForm(AuthenticationForm):
 class UserCreationForm(_UserCreationForm):
     f_name = forms.CharField(max_length=256, required=True, label='Имя')
     s_name = forms.CharField(max_length=256, required=True, label='Фамилия')
-    t_name = forms.CharField(max_length=256, required=True, label='Отчество')
-    email = forms.EmailField()
+    t_name = forms.CharField(max_length=256, required=False, label='Отчество')
+    email = forms.EmailField(required=False)
 
     class Meta(_UserCreationForm.Meta):
         model = models.User
@@ -70,7 +71,6 @@ class StudentSignUpForm(UserCreationForm):
 
 
 class TeacherSignUpForm(UserCreationForm):
-    degree = forms.CharField(required=True, label='Степень')
 
     def __init__(self, *args, **kwargs):
         super(TeacherSignUpForm, self).__init__(*args, **kwargs)
@@ -85,8 +85,8 @@ class TeacherSignUpForm(UserCreationForm):
         user = super().save(commit=False)
         user.is_teacher = True
         user.save()
-        models.Teacher.objects.create(user=user,
-                                      degree=self.cleaned_data.get('degree'))
+        degree = self.cleaned_data.get('degree')
+        models.Teacher.objects.create(user=user)
         return user
 
 
@@ -131,11 +131,63 @@ class GroupAddForm(forms.ModelForm):
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
             }),
-            'year': forms.DateInput(attrs={
-                'class': 'form-control',
+            'year': forms.SelectDateWidget(attrs={
+                'class': 'mdb-select',
             }),
             'specialty': forms.Select(attrs={
                 'class': 'mdb-select',
                 'searchable': 'Пойск...',
             }),
         }
+
+
+class CourseAddForm(forms.ModelForm):
+    subject = forms.ChoiceField(required=True,
+                                choices=[(x.pk, x.name) for x in models.Subject.objects.all()],
+                                label='Предмет',
+                                widget=forms.Select(attrs={
+                                    'class': 'mdb-select',
+                                    'searchable': 'Пойск...',
+                                }))
+    dayOfWeek = forms.ChoiceField(required=True,
+                                  choices=models.DAY_OF_THE_WEEK.items(),
+                                  label='День недели',
+                                  widget=forms.Select(attrs={
+                                    'class': 'mdb-select',
+                                  }))
+    time = forms.ChoiceField(required=True,
+                             choices=models.TIME.items(),
+                             label='Время пары',
+                             widget=forms.Select(attrs={
+                                 'class': 'mdb-select',
+                             }))
+    teacher = forms.ChoiceField(required=True,
+                                choices=[(x.user.pk, x.user.last_name + ' ' + x.user.first_name) for x in models.Teacher.objects.all()],
+                                label='Преподаватель',
+                                widget=forms.Select(attrs={
+                                    'class': 'mdb-select',
+                                    'searchable': 'Пойск...',
+                                }))
+    students = forms.MultipleChoiceField(choices=[(x.user.pk, x.user.last_name + ' ' + x.user.first_name) for x in models.Student.objects.all()],
+                                         label='Студенты',
+                                         required=True,
+                                         widget=forms.SelectMultiple(attrs={
+                                             'class': 'mdb-select',
+                                             'multiple': '',
+                                             'searchable': 'Пойск...',
+                                         }))
+
+    class Meta:
+        model = models.StudentTeacherSubject
+        fields = ['subject', 'dayOfWeek', 'time', 'teacher', 'students']
+
+    @transaction.atomic
+    def save(self, commit=True):
+        course_l = models.TeacherSubject.objects.create(teacher=models.Teacher.objects.get(pk=int(self.cleaned_data.get('teacher'))),
+                                                        subject=models.Subject.objects.get(pk=int(self.cleaned_data.get('subject'))),
+                                                        dayOfWeek=self.cleaned_data.get('dayOfWeek'),
+                                                        time=datetime.datetime.strptime(self.cleaned_data.get('time'), '%H:%M').time())
+        for student in self.cleaned_data.get('students'):
+            models.StudentTeacherSubject.objects.create(student=models.Student.objects.get(pk=int(student)),
+                                                        teacher_subject=course_l)
+        return models.StudentTeacherSubject.objects.latest('pk')
