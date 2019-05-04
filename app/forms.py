@@ -1,4 +1,4 @@
-import datetime
+import datetime, collections
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
@@ -85,7 +85,6 @@ class TeacherSignUpForm(UserCreationForm):
         user = super().save(commit=False)
         user.is_teacher = True
         user.save()
-        degree = self.cleaned_data.get('degree')
         models.Teacher.objects.create(user=user)
         return user
 
@@ -127,18 +126,25 @@ class GroupAddForm(forms.ModelForm):
             'year': 'Год поступления',
             'specialty': 'Направление',
         }
+        years = {}
+        for x in range(2015, datetime.datetime.now().year):
+            years[datetime.datetime(year=x, month=1, day=1).date()] = x.__str__()
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
             }),
-            'year': forms.SelectDateWidget(attrs={
+            'year': forms.Select(attrs={
                 'class': 'mdb-select',
-            }),
+            },
+                choices=years.items()),
             'specialty': forms.Select(attrs={
                 'class': 'mdb-select',
                 'searchable': 'Пойск...',
             }),
         }
+
+    def clean(self):
+        return super(GroupAddForm, self).clean()
 
 
 class CourseAddForm(forms.ModelForm):
