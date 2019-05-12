@@ -3,14 +3,14 @@
 {% block lb-block %}
 <form method="post">
     {% csrf_token %}
-    <div class="form-row align-items-end">
-        <div class="col-md-6">
-          <label for="nameInput">{{ form.name.label }}</label>
+    <div class="row align-items-end">
+    <div class="col-12 col-md-9 pr-0">
+          {{ form.name.label_tag }}
           {{ form.name }}
-        </div>
-        <div class="col-auto">
-          <button type="submit" class="btn btn-primary mb-3">Создать</button>
-        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <button type="submit" class="btn btn-primary btn-block">Создать</button>
+    </div>
     </div>
 </form>
 {% endblock %}

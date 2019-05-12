@@ -1304,8 +1304,8 @@
   box-shadow: none !important; }
 
 .z-depth-1, .chip:active {
-  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important;
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12) !important; }
+  -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.16) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.16) !important; }
 
 .z-depth-1-half {
   -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15) !important;
@@ -1546,6 +1546,10 @@ button.bg-light:focus {
   src: url("../font/roboto/Roboto-Bold.eot");
   src: url("../font/roboto/Roboto-Bold.eot?#iefix") format("embedded-opentype"), url("../font/roboto/Roboto-Bold.woff2") format("woff2"), url("../font/roboto/Roboto-Bold.woff") format("woff"), url("../font/roboto/Roboto-Bold.ttf") format("truetype");
   font-weight: 700; }
+
+body{
+  font-family: "Roboto", sans-serif;
+}
 
 .h1-responsive {
   font-size: 150%; }
@@ -4548,7 +4552,8 @@ a.waves-effect, a.waves-light {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, -webkit-box-shadow 0.15s ease-in-out;
   cursor: pointer;
   word-wrap: break-word;
-  color: inherit; }
+  color: inherit;
+  border: 0px; }
   .btn:not([disabled]):not(.disabled):active, .btn:not([disabled]):not(.disabled).active {
     -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
     box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15); }
@@ -4567,8 +4572,7 @@ a.waves-effect, a.waves-light {
     .btn.btn-md .fas, .btn.btn-md .fab, .btn.btn-md .far {
       font-size: 0.8rem; }
   .btn.btn-sm {
-    padding: 0.5rem 1.6rem;
-    font-size: 0.64rem; }
+    padding: 0.5rem 1.6rem;}
     .btn.btn-sm .fas, .btn.btn-sm .fab, .btn.btn-sm .far {
       font-size: 0.7rem; }
   .btn.btn-tb {
@@ -4690,13 +4694,13 @@ a.btn:not([href]):not([tabindex]):hover {
   color: #fff; }
 
 .btn-outline-primary {
-  border: 2px solid #4285f4 !important;
+  border: 1.5px solid #4285f4 !important;
   background-color: transparent !important;
   color: #4285f4 !important; }
   .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active, .btn-outline-primary:active:focus, .btn-outline-primary.active {
     border-color: #4285f4 !important;
-    background-color: transparent !important;
-    color: #4285f4 !important; }
+    background-color: #4285f4 !important;
+    color: #fff !important; }
   .btn-outline-primary:not([disabled]):not(.disabled):active, .btn-outline-primary:not([disabled]):not(.disabled).active,
   .show > .btn-outline-primary.dropdown-toggle {
     -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
@@ -6898,9 +6902,7 @@ body.scrollable {
 .modal-dialog .modal-content {
   -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
   box-shadow: 0 5px 11px 0 rgba(0, 0, 0, 0.18), 0 4px 15px 0 rgba(0, 0, 0, 0.15);
-  border: 0;
-  -webkit-border-radius: 0.125rem;
-  border-radius: 0.125rem; }
+  border: 0;}
   .modal-dialog .modal-content .modal-header {
     -webkit-border-top-left-radius: 0.125rem;
     border-top-left-radius: 0.125rem;
@@ -8330,8 +8332,7 @@ table th {
   font-weight: 400; }
 
 table td {
-  font-size: 0.9rem;
-  font-weight: 300; }
+  font-size: 0.9rem;}
 
 table.table thead th {
   border-top: none; }
@@ -11518,11 +11519,11 @@ label.btn input[type="checkbox"]:not(.filled-in) + label:after {
   z-index: 0;
   border: 2px solid #8a8a8a;
   -webkit-border-radius: 1px;
-  border-radius: 1px;
   margin-top: 3px;
   -webkit-transition: 0.2s;
   -o-transition: 0.2s;
-  transition: 0.2s; }
+  transition: 0.2s;
+  border-radius: 0.25rem; }
 
 .form-check-input[type="checkbox"]:not(.filled-in) + label:after,
 label.btn input[type="checkbox"]:not(.filled-in) + label:after {
@@ -11542,6 +11543,7 @@ label.btn input[type="checkbox"]:checked + label:before {
   left: -5px;
   width: 12px;
   height: 1.375rem;
+  border-radius: 2px;
   border-top: 2px solid transparent;
   border-left: 2px solid transparent;
   border-right: 2px solid #4285f4;

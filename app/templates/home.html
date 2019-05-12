@@ -5,22 +5,101 @@
     Вы студент.
     2 блока + хз
 {% elif user.is_teacher %}
-    Вы преподаватель.
-    Список преподаваемых курсов
+
+<div class="list-group border-0">
+{% for course in courseTeacher %}
+    <a href="{% url 'course' pk=course.pk %}" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-0">{{ course.subject.name }}</h5>
+      <small class="mt-1">{{ course.get_day }} <span class="badge badge-primary badge-pill z-depth-1 float-right">{{ course.time }}</span></small>
+    </div>
+  </a>
+{% endfor %}
+</div>
+
 {% else %}
-    <a class="btn btn-danger mb-3" href="/admin">Админка</a>
-    <a class="btn btn-primary mb-3" href="{% url 'registration' %}">Добавить пользователя</a>
-    <a class="btn btn-primary mb-3" href="{% url 'add_subject' %}">Добавить предмет</a>
-    <a class="btn btn-primary mb-3" href="{% url 'add_speciality' %}">Добавить направление</a>
-    <a class="btn btn-primary mb-3" href="{% url 'add_group' %}">Добавить группу</a>
-    <a class="btn btn-primary mb-3" href="{% url 'add_course' %}">Добавить Курс</a>
+    <div>
+        <a class="btn btn-danger mb-3" href="/admin">Админка</a>
+        <a class="btn btn-primary mb-3" href="{% url 'registration' %}">Добавить пользователя</a>
+        <a class="btn btn-primary mb-3" href="{% url 'add_subject' %}">Добавить предмет</a>
+        <a class="btn btn-primary mb-3" href="{% url 'add_speciality' %}">Добавить направление</a>
+        <a class="btn btn-primary mb-3" href="{% url 'add_group' %}">Добавить группу</a>
+        <a class="btn btn-primary mb-3" href="{% url 'add_course' %}">Добавить Курс</a>
+    </div>
 {% endif %}
 {% endblock %}
 {% block rt-block %}
 {% if user.is_student %}
     Уведомления для студента
 {% elif user.is_teacher %}
-    Форма добавления задания
+
+<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Создать задачу</button>
+<div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="m-0">Создать задание</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                <small id="nameHelpBlock" class="form-text text-muted">
+                    Вводите только название задания, нет необходимости вводить название предмета.
+                </small>
+            </div>
+            <div class="form-group">
+                {{ form.taught_subjects.label_tag }}
+                {{ form.taught_subjects }}
+            </div>
+            <div class="form-group">
+                {{ form.end_date.label_tag }}
+                {{ form.end_date }}
+            </div>
+            <div class="form-group">
+                {{ form.text.label_tag }}
+                {{ form.text }}
+            </div>
+            <div class="d-flex flex-wrap justify-content-between mt-3">
+                <div class="file-field col-12 col-lg-8 pl-0 pr-0">
+                    <div class="btn btn-primary btn-sm float-left">
+                        <span>{{ form.files.label }}</span>
+                        {{ form.files }}
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate form-control" type="text" placeholder="Загрузите один или более файлов">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-2 mt-2 mt-lg-0 mb-1">Создать</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+</div>
+<script>
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
+$('.mdb-select').attr("required", "true");
+});
+$('.datepicker').pickadate({
+monthsFull: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+monthsShort: ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'],
+weekdaysFull: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+weekdaysShort: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+today: '',
+clear: 'Очистить',
+close: 'Закрыть',
+format: 'dd/mm/yyyy',
+selectYears: false,
+formatSubmit: 'dd/mm/yyyy'
+})
+</script>
 {% else %}
     Добавление курса, предмета, пользователей
 {% endif %}

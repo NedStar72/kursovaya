@@ -8,20 +8,23 @@
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/mdb.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/all.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% block head-block %}
+    {% endblock %}
 </head>
 <body>
 <script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
-<nav class="navbar navbar-expand-md navbar-light grey lighten-5 sticky-top border-bottom mb-3 z-depth-0">
+<nav class="navbar navbar-expand-md navbar-light grey lighten-5 sticky-top mb-3 z-depth-1">
     <div class="container justify-content-start position-relative">
     <button class="navbar-toggler navbar-toggler-left border-0 pl-0 pr-0 mr-3" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <a class="navbar-brand h1 mb-0 ml-0" href="{% url 'home' %}">Мобильный семестр</a>
-    <div class="collapse navbar-collapse pl-3 pl-md-0" id="navbarSupportedContent">
+    <div class="collapse navbar-collapse pl-5 pl-md-0" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'home' %}">Главная</a>
@@ -75,7 +78,7 @@
             {% block rt-block %}
             {% endblock %}
         </div>
-        <div class="col-12 col-lg-9 order-lg-first pt-0 pb-0 pr-md-3">
+        <div class="col-12 col-lg-9 order-lg-first pt-0 pb-0 pr-lg-3">
             {% block lb-block %}
             {% endblock %}
         </div>

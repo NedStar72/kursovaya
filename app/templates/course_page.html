@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% load staticfiles %}
+{% block head-block %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/addons/datatables.css' %}">
+<style>
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc_disabled:after,
+    table.dataTable thead .sorting_asc_disabled:before,
+    table.dataTable thead .sorting_desc:after,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc_disabled:after,
+    table.dataTable thead .sorting_desc_disabled:before {
+        bottom: .5em;
+        left: 1px;
+    }
+    table .th-sm {
+        min-width: 0;
+    }
+    tbody td{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    table.table a {
+        color: #007bff;
+    }
+    table.table th.col-1, table.table td.col-1{
+        min-width: 40px;
+    }
+    table.table th.col-2, table.table td.col-2{
+        min-width: 80px;
+    }
+    table.table th.col-3, table.table td.col-3{
+        min-width: 120px;
+    }
+</style>
+{% endblock %}
+
+{% block lb-block %}
+<script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>
+<div>
+    Преподаватель: <a href="">{{ course.teacher }}</a>
+</div>
+<div class="mb-3">
+    Время пары: {{ course.get_day }}, {{ course.time }}
+</div>
+<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
+<caption>Список студентов</caption>
+<thead>
+    <tr class="d-flex">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-3 pr-1 pl-3">Фамилия</th>
+    <th class="th-sm col-2 pr-1 pl-3">Имя</th>
+    <th class="th-sm col-2 pr-1">Отчество</th>
+    <th class="th-sm col-2 pr-1 pl-3">Группа</th>
+    <th class="th-sm col-2 pr-1 pl-3">Баллов</th>
+    </tr>
+</thead>
+<tbody>
+{% for student in students %}
+<div>
+<tr class="d-flex">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-3 pr-1">{{ student.user.last_name }}</td>
+    <td class="col-2 pr-1">{{ student.user.first_name }}</td>
+    <td class="col-2 pr-1">{{ student.user.patronymic }}</td>
+    <td class="col-2 pr-1"><a href="">{{ student.group }}</a></td>
+    <td class="col-2 pr-1">76</td>
+</tr>
+</div>
+{% empty %}
+    Список пуст.
+{% endfor %}
+</tbody>
+</table>
+{% if tasks %}
+<hr class="mt-1">
+<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="ttable">
+<caption>Список заданий</caption>
+<thead>
+    <tr class="d-flex">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-9 pr-1">Название</th>
+    <th class="th-sm col-2 pr-1 pl-3">До</th>
+    </tr>
+</thead>
+<tbody>
+{% for task in tasks %}
+<div>
+<tr class="d-flex">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-9 pr-1"><a href="{% url 'task' pk=task.pk %}">{{ task.name }}</a></td>
+    <td class="col-2 pr-1">{{ task.end_date }}</td>
+</tr>
+</div>
+{% endfor %}
+</tbody>
+</table>
+{% endif %}
+
+<script>
+$(document).ready(function () {
+$('#stable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false,
+targets: 3
+}]
+});
+$('#ttable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false,
+targets: 1
+}]
+});
+$('.dataTables_length').addClass('bs-select');
+});
+</script>
+{% endblock %}
+{% block rt-block %}
+
+{% endblock %}

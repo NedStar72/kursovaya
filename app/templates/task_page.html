@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block head-block %}
+
+{% endblock %}
+
+{% block lb-block %}
+<div>
+    Предмет: {{ task.taught_subjects.all.0.subject }}
+</div>
+<div>
+    Преподаватель: <a href="">{{ task.taught_subjects.all.0.teacher }}</a>
+</div>
+<div class="mb-3">
+    До: {{ task.end_date }}
+</div>
+{% if task.text %}
+    <p>{{ task.text }}</p>
+{% else %}
+    <p class="text-muted">Нет текста</p>
+{% endif %}
+{% if files %}
+    {% for file in files %}
+    <div>
+    {% if file.css_class == 'word'%}
+    <i class="fas fa-file-word"></i>
+    {% endif %}
+    <a href="{{ file.file.url }}">{{ file }}</a>
+    </div>
+    {% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block rt-block %}
+
+{% endblock %}

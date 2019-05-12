@@ -1,5 +1,7 @@
 from datetime import datetime
+import os
 from django.db import models
+from django.db.models.signals import post_delete
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import AbstractUser
@@ -22,13 +24,12 @@ DAY_OF_THE_WEEK = {
         '4': _(u'Thursday'),
         '5': _(u'Friday'),
         '6': _(u'Saturday'),
-        '7': _(u'Sunday'),
     }
 TIME = {
-    '8:00': '08:00',
-    '9:45': '09:45',
+    '08:00': '08:00',
+    '09:45': '09:45',
     '11:30': '11:30',
-    '13:00': '13:00',
+    '13:30': '13:30',
 }
 
 
@@ -77,7 +78,6 @@ class Student(models.Model):
         verbose_name = _(u'Студент')
         verbose_name_plural = _(u'Студенты')
         default_related_name = 'students'
-        ordering = ['group']
         db_table = 'Students'
 
     def __str__(self):
@@ -124,6 +124,9 @@ class TeacherSubject(models.Model):
         ordering = ['subject', 'teacher', 'dayOfWeek']
         db_table = 'Teacher_Subject'
 
+    def get_day(self):
+        return DAY_OF_THE_WEEK[self.dayOfWeek]
+
     def __str__(self):
         return self.subject.__str__() + ' - ' + self.teacher.__str__()
 
@@ -145,19 +148,19 @@ class StudentTeacherSubject(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=254, verbose_name=_(u'Название'))
     text = models.TextField(verbose_name=_(u'Текст'))
-    start_date = models.DateTimeField(verbose_name=_(u'Дата начала'))
-    end_date = models.DateTimeField(verbose_name=_(u'Дата окончания'))
-    taught_subject = models.ForeignKey(TeacherSubject, on_delete=models.CASCADE)
+    start_date = models.DateField(verbose_name=_(u'Дата начала'), auto_now=True)
+    end_date = models.DateField(verbose_name=_(u'Дата окончания'))
+    taught_subjects = models.ManyToManyField(TeacherSubject)
 
     class Meta:
         verbose_name = _(u'Задание')
         verbose_name_plural = _(u'Задания')
         default_related_name = 'tasks'
-        ordering = ['taught_subject', 'start_date']
+        ordering = ['end_date']
         db_table = 'Tasks'
 
     def __str__(self):
-        return self.name.__str__() + ' (' + self.taught_subject.__str__() + ')'
+        return self.name.__str__()
 
 
 class Mark(models.Model):
@@ -174,12 +177,11 @@ class Mark(models.Model):
         db_table = 'Marks'
 
     def __str__(self):
-        return self.student.__str__() + ' ' + self.points
+        return self.student.__str__() + ' ' + self.points.__str__()
 
 
 def user_directory_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'user_{0}/{1}/{2}'.format(instance.user.id, datetime.now().year, filename)
+    return 'task_{0}/{1}'.format(instance.task.id, filename)
 
 
 class TaskFile(models.Model):
@@ -192,5 +194,21 @@ class TaskFile(models.Model):
         ordering = ['task']
         db_table = 'TaskFiles'
 
+    def css_class(self):
+        name, extension = os.path.splitext(self.file.name)
+        if extension == '.pdf':
+            return 'pdf'
+        if extension == '.doc' or extension == '.docx':
+            return 'word'
+        if extension == '.ppt' or extension == '.pptx':
+            return 'pp'
+        if extension == '.jpg' or extension == '.png':
+            return 'photo'
+        if extension == '.xls' or extension == '.xlsx':
+            return 'exel'
+        if extension == '.txt':
+            return 'text'
+        return 'other'
+
     def __str__(self):
-        return self.task.__str__() + ' ' + self.file.__str__()
+        return self.file.__str__().split('/')[-1]

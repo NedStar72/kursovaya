@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = LOGIN_URL
 
 MEDIA_URL = '/files/'
-MEDIA_ROOT = '/files/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
 
 AUTH_USER_MODEL = 'app.User'
