@@ -49,7 +49,17 @@ class HomeView(LoginRequiredMixin, CreateView):
             context['courseTeacher'] = models.TeacherSubject.objects.filter(teacher=teacher)
             context['form'] = forms.TaskAddForm(teacher=teacher)
         if self.request.user.is_student:
-            context['courseStudent'] = 0  # изменить
+            student = models.Student.objects.get(user=self.request.user)
+            courses = [x.teacher_subject for x in models.StudentTeacherSubject.objects.filter(student=student)]
+            student_tasks = models.Task.objects.filter(teacher_subjects__in=courses,
+                                                       end_date__gte=datetime.now().date()).order_by('end_date')[:3]
+            temp = []
+            for task in student_tasks:
+                for course in courses:
+                    if course in task.teacher_subjects.all():
+                        temp += [(task, course)]
+                        break
+            context['student_tasks'] = temp
         context['title'] = 'Главная страница'
         context['year'] = datetime.now().year
         return context
@@ -176,9 +186,10 @@ class CourseView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(CourseView, self).get_context_data(**kwargs)
-        context['title'] = "Группа: " + self.object.subject.name
-        context['students'] = [x.student for x in models.StudentTeacherSubject.objects.filter(teacher_subject=self.object)]
-        context['tasks'] = models.Task.objects.filter(taught_subjects=self.object)
+        context['title'] = "Курс: " + self.object.subject.name
+        context['students'] = [x.student for x in models.StudentTeacherSubject.objects.filter(
+            teacher_subject=self.object)]
+        context['tasks'] = models.Task.objects.filter(teacher_subjects=self.get_object())
         return context
 
 
@@ -193,18 +204,84 @@ class TaskView(LoginRequiredMixin, DetailView):
         if self.request.user.is_student:
             has = False
             student = models.Student.objects.get(user=request.user)
-            t_subjects = task.taught_subjects.all()
+            t_subjects = task.teacher_subjects.all()
             for t_subject in t_subjects:
-                exists = models.StudentTeacherSubject.objects.filter(teacher_subject=t_subject, student=student).exists()
+                exists = models.StudentTeacherSubject.objects.filter(teacher_subject=t_subject,
+                                                                     student=student).exists()
                 has = has or exists
             if not has:
                 return redirect('/')
-        if self.request.user.is_teacher and task.taught_subjects.first().teacher != models.Teacher.objects.get(user=request.user):
+        if self.request.user.is_teacher and task.teacher_subjects.first().teacher != models.Teacher.objects.get(
+                user=request.user):
                 return redirect('/')
         return super(TaskView, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        if request.user.is_student:
+            request.POST = request.POST.copy()
+            request.POST['task'] = self.get_object().pk
+            c_t = models.CompletedTask.objects.get(student=models.Student.objects.get(user=request.user),
+                                                   task=self.get_object())
+            if c_t:
+                form = forms.CompletedTaskAddForm(request.POST, student=models.Student.objects.get(user=request.user),
+                                                  instance=c_t)
+            else:
+                form = forms.CompletedTaskAddForm(request.POST, student=models.Student.objects.get(user=request.user))
+            if form.is_valid():
+                completed_task = form.save()
+                files = request.FILES.getlist('files')
+                if files.__len__ != 0:
+                    models.TaskFile.objects.filter(completed_task=completed_task).delete()
+                for file in files:
+                    models.TaskFile.objects.create(completed_task=completed_task, file=file)
+                return redirect('task', pk=self.get_object().pk)
+        elif request.user.is_teacher:
+            abs = 123
+            # form = forms.MarkAddForm(request.POST, task=self.get_object())
+            # if form.is_valid():
+            #     form.save()
+            #     return redirect('task', pk=self.get_object().pk)
+        return redirect('/')
+
     def get_context_data(self, **kwargs):
         context = super(TaskView, self).get_context_data(**kwargs)
-        context['files'] = models.TaskFile.objects.filter(task=self.object)
-        context['title'] = "Задание: " + self.object.name
+        task = self.get_object()
+        if self.request.user.is_student:
+            student = models.Student.objects.get(user=self.request.user)
+            try:
+                context['completed_task'] = models.CompletedTask.objects.get(student=student, task=self.get_object())
+            except models.CompletedTask.DoesNotExist:
+                context['completed_task'] = None
+            if context['completed_task'] is None:
+                context['form'] = forms.CompletedTaskAddForm(student=student)
+            else:
+                context['completed_task_files'] = models.TaskFile.objects.filter(completed_task=context['completed_task'])
+                if context['completed_task'].task.end_date > datetime.now().date():
+                    context['form'] = forms.CompletedTaskAddForm(student=student, instance=context['completed_task'])
+                else:
+                    context['form'] = None
+        # context['form'] = forms.MarkAddForm(task=task)
+        # context['marks'] = models.Mark.objects.filter(task=task)
+        context['files'] = models.TaskFile.objects.filter(task=task)
+        context['title'] = "Задание: " + task.name
+        return context
+
+
+class GroupView(LoginRequiredMixin, DetailView):
+    model = models.Group
+    template_name = 'group_page.html'
+    context_object_name = 'group'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_student:
+            group = self.get_object()
+            student = models.Student.objects.get(user=request.user)
+            if not (student in models.Student.objects.filter(group=group)):
+                return redirect('/')
+        return super(GroupView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupView, self).get_context_data(**kwargs)
+        context['students'] = [x for x in models.Student.objects.filter(group=self.object)]
+        context['title'] = "Группа: " + self.object.name
         return context

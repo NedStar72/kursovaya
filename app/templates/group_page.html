@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
+<caption>Список студентов</caption>
+<thead>
+    <tr class="d-flex">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-4 pr-1 pl-3">Фамилия</th>
+    <th class="th-sm col-3 pr-1 pl-3">Имя</th>
+    <th class="th-sm col-4 pr-1 pl-3">Отчество</th>
+    </tr>
+</thead>
+<tbody>
+{% for student in students %}
+<div>
+<tr class="d-flex">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-4 pr-1"><a href="">{{ student.user.last_name }}</a></td>
+    <td class="col-3 pr-1">{{ student.user.first_name }}</td>
+    <td class="col-4 pr-1">{{ student.user.patronymic }}</td>
+</tr>
+</div>
+{% empty %}
+    Список пуст.
+{% endfor %}
+</tbody>
+</table>
+<script>
+$(document).ready(function () {
+$('#stable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false
+}]
+});
+$('.dataTables_length').addClass('bs-select');
+});
+</script>
+{% endblock %}
+
+{% block rt-block %}
+
+{% endblock %}

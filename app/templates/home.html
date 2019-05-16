@@ -2,23 +2,129 @@
 
 {% block lb-block %}
 {% if user.is_student %}
-    Вы студент.
-    2 блока + хз
-{% elif user.is_teacher %}
+<div class="row no-gutters align-items-start ">
+    <div class="d-flex flex-column col-12 col-md-6 pr-3 mb-3 position-relative">
+        <h4 class="mb-3 font-weight-normal">Ближайшие задания</h4>
+        <div class="line"></div>
+        <div class="shade d-lg-none"></div>
+        {% for foo in student_tasks %}
+        {% with foo.0 as task %}{% with foo.1 as course %}
+        <div class="d-flex mb-2">
+            <div class="onelinetext pr-2 flex-shrink-0"><span class="pt10 text-decoration-none text-body">{{ task.end_date|date:"d.m" }}</span></div>
+            <div class="point"></div>
+            <div class="flex-column flex-fill" style="min-width:0;">
+                <div class="onelinetext ml-2 h5 mb-0 font-weight-normal"><a href="{% url 'task' pk=task.pk %}" class="text-body">{{ task.name }}</a></div>
+                <div class="onelinetext ml-2 pt10"><a href="{% url 'course' pk=course.pk %}">{{ course.subject }}</a></div>
+            </div>
+        </div>
+        {% endwith %}{% endwith %}
+        {% endfor %}
+    </div>
+    <div class="d-flex flex-column col-12 col-md-6 p-0 mb-3">
+        <div class="d-flex justify-content-between" style="padding: 0 28px;">
+            <h4 class="clearfix d-inline-block w-auto mb-0">Расписание</h4>
+        </div>
+        <div class="d-flex align-items-start">
+            <a href="#schedule" role="button" data-slide="prev" class="display rounded-circle mr-2 text-decoration-none text-white arrow left">
+                &lt;
+            </a>
+            <div class="flex-grow-1" style="min-width:0;">
+                <div id="schedule" class="carousel slide" data-interval="false" data-ride="carousel">
+                    <div class="carousel-inner" >
+                        <div class="carousel-item active">
+                            <div class="col-12 p-0 font-weight-light onelinetext">Воскресенье, 14.04.2019</div>
+                            <div class="d-flex">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block">- 09:30</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>09:45</span><span class="d-none d-sm-inline-block">- 11:15</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>11:30</span><span class="d-none d-sm-inline-block">- 13:00</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>13:30</span><span class="d-none d-sm-inline-block">- 15:00</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="col-12 p-0 font-weight-light onelinetext">Понедельник, 15.04.2019</div>
+                            <div class="d-flex">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block">- 09:30</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>09:45</span><span class="d-none d-sm-inline-block">- 11:15</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                            <div class="d-flex border-top">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>11:30</span><span class="d-none d-sm-inline-block">- 13:00</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="col-12 p-0 font-weight-light onelinetext">Вторник, 16.04.2019</div>
+                            <div class="d-flex">
+                                <div class="pt10 align-self-center pr-2 text-center text-secondary flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block"> - 09:30</span></div>
+                                <div class="flex-column flex-fill" style="min-width:0;">
+                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-body">Математическая логика</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-secondary">Платонов М.Л.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="#schedule" role="button" data-slide="next" class="display rounded-circle ml-2 text-decoration-none text-white arrow right">
+                &gt;
+            </a>
+        </div>
 
+    </div>
+    <div class="col-12">
+        123
+    </div>
+</div>
+{% elif user.is_teacher %}
 <div class="list-group border-0">
 {% for course in courseTeacher %}
     <a href="{% url 'course' pk=course.pk %}" class="list-group-item list-group-item-action flex-column align-items-start">
-    <div class="d-flex w-100 justify-content-between">
-      <h5 class="mb-0">{{ course.subject.name }}</h5>
-      <small class="mt-1">{{ course.get_day }} <span class="badge badge-primary badge-pill z-depth-1 float-right">{{ course.time }}</span></small>
+    <div class="d-flex flex-wrap justify-content-md-between">
+      <h5 class="col-12 col-md-auto pl-0 mb-0 ">{{ course.subject.name }}</h5>
+      <small class=" d-flex justify-content-md-between mt-1">
+          <span class="pr-2 pr-md-0">{{ course.get_day }}</span>
+          <span class="badge badge-primary badge-pill z-depth-1 timespan">{{ course.time }}</span>
+      </small>
     </div>
   </a>
 {% endfor %}
 </div>
-
 {% else %}
-    <div>
+<div>
         <a class="btn btn-danger mb-3" href="/admin">Админка</a>
         <a class="btn btn-primary mb-3" href="{% url 'registration' %}">Добавить пользователя</a>
         <a class="btn btn-primary mb-3" href="{% url 'add_subject' %}">Добавить предмет</a>
@@ -54,8 +160,8 @@
                 </small>
             </div>
             <div class="form-group">
-                {{ form.taught_subjects.label_tag }}
-                {{ form.taught_subjects }}
+                {{ form.teacher_subjects.label_tag }}
+                {{ form.teacher_subjects }}
             </div>
             <div class="form-group">
                 {{ form.end_date.label_tag }}

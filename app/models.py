@@ -77,6 +77,7 @@ class Student(models.Model):
     class Meta:
         verbose_name = _(u'Студент')
         verbose_name_plural = _(u'Студенты')
+        ordering = ['user__last_name']
         default_related_name = 'students'
         db_table = 'Students'
 
@@ -114,18 +115,18 @@ class TeacherSubject(models.Model):
     # Мб subject сделать не отдельной таблицей?
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, null=True, on_delete=models.SET_NULL)
-    dayOfWeek = DayOfTheWeekField()
+    day_of_week = DayOfTheWeekField()
     time = models.TimeField(verbose_name=_(u'Время начала пары'))
     # Надо добавить время начала предмета и время окончания? (что-то вроде продолжительности курса)
 
     class Meta:
         verbose_name = _(u'Преподаваемый предмет')
         verbose_name_plural = _(u'Преподаваемые предметы')
-        ordering = ['subject', 'teacher', 'dayOfWeek']
+        ordering = ['subject', 'teacher', 'day_of_week']
         db_table = 'Teacher_Subject'
 
     def get_day(self):
-        return DAY_OF_THE_WEEK[self.dayOfWeek]
+        return DAY_OF_THE_WEEK[self.day_of_week]
 
     def __str__(self):
         return self.subject.__str__() + ' - ' + self.teacher.__str__()
@@ -138,11 +139,11 @@ class StudentTeacherSubject(models.Model):
     class Meta:
         verbose_name = 'Студент преподаваемого предмета'
         verbose_name_plural = 'Студенты преподаваемых предметов'
-        ordering = ['teacher_subject', 'student']
+        ordering = ['student__user__last_name', 'student__pk']
         db_table = 'Student_TeacherSubject'
 
     def __str__(self):
-        return self.student.__str__() + ' ' + self.teacher_subject.__str__()
+        return self.student.__str__()  # + ' ' + self.teacher_subject.__str__()
 
 
 class Task(models.Model):
@@ -150,7 +151,7 @@ class Task(models.Model):
     text = models.TextField(verbose_name=_(u'Текст'))
     start_date = models.DateField(verbose_name=_(u'Дата начала'), auto_now=True)
     end_date = models.DateField(verbose_name=_(u'Дата окончания'))
-    taught_subjects = models.ManyToManyField(TeacherSubject)
+    teacher_subjects = models.ManyToManyField(TeacherSubject)
 
     class Meta:
         verbose_name = _(u'Задание')
@@ -163,29 +164,33 @@ class Task(models.Model):
         return self.name.__str__()
 
 
-class Mark(models.Model):
-    student = models.ForeignKey(StudentTeacherSubject, null=True, on_delete=models.SET_NULL)
-    task = models.ForeignKey(Task, null=True, on_delete=models.SET_NULL)
-    points = models.FloatField(verbose_name='Баллы')
-    date = models.DateField(verbose_name='Дата получения')
+class CompletedTask(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    text = models.TextField(verbose_name=_(u'Текст'))
+    date = models.DateField(verbose_name=_(u'Дата'), auto_now=True)
 
     class Meta:
-        verbose_name = _(u'Оценка')
-        verbose_name_plural = _(u'Оценки')
-        default_related_name = 'marks'
-        ordering = ['date']
-        db_table = 'Marks'
+        verbose_name = _(u'Выполненное задание')
+        verbose_name_plural = _(u'Выполненные задания')
+        default_related_name = 'completed_tasks'
+        ordering = ['date', 'task__name', 'student__user__last_name']
+        db_table = 'CompletedTasks'
 
     def __str__(self):
-        return self.student.__str__() + ' ' + self.points.__str__()
+        return self.task.__str__() + ' - ' + self.student.__str__()
 
 
 def user_directory_path(instance, filename):
-    return 'task_{0}/{1}'.format(instance.task.id, filename)
+    if instance.task:
+        return 'task_{0}/{1}'.format(instance.task.id, filename)
+    else:
+        return 'student_{0}/{1}/{2}'.format(instance.completed_task.student.user.id, datetime.now().year, filename)
 
 
 class TaskFile(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
+    completed_task = models.ForeignKey(CompletedTask, on_delete=models.CASCADE, null=True)
     file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
@@ -212,3 +217,19 @@ class TaskFile(models.Model):
 
     def __str__(self):
         return self.file.__str__().split('/')[-1]
+
+
+class Mark(models.Model):
+    completed_task = models.ForeignKey(CompletedTask, on_delete=models.CASCADE)
+    points = models.FloatField(verbose_name='Баллы')
+    date = models.DateField(verbose_name='Дата получения', auto_now=True)
+
+    class Meta:
+        verbose_name = _(u'Оценка')
+        verbose_name_plural = _(u'Оценки')
+        default_related_name = 'marks'
+        ordering = ['date', 'completed_task__task__name', 'completed_task__student__last_name']
+        db_table = 'Marks'
+
+    def __str__(self):
+        return self.completed_task.__str__() + ' : ' + self.points.__str__()

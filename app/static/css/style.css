@@ -73,3 +73,112 @@ table.picker__table{
     width: 94% !important;
     margin: 10px !important;
 }
+
+.timespan{
+    height: 14px;
+    margin-top: 2px;
+}
+    table.dataTable thead .sorting:after,
+    table.dataTable thead .sorting:before,
+    table.dataTable thead .sorting_asc:after,
+    table.dataTable thead .sorting_asc:before,
+    table.dataTable thead .sorting_asc_disabled:after,
+    table.dataTable thead .sorting_asc_disabled:before,
+    table.dataTable thead .sorting_desc:after,
+    table.dataTable thead .sorting_desc:before,
+    table.dataTable thead .sorting_desc_disabled:after,
+    table.dataTable thead .sorting_desc_disabled:before {
+        bottom: .5em !important;
+        left: 1px;
+    }
+    table .th-sm {
+        min-width: 0;
+    }
+    tbody td{
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+    table.table a {
+        color: #007bff;
+    }
+    table.table th.col-1, table.table td.col-1{
+        min-width: 40px;
+    }
+    table.table th.col-2, table.table td.col-2{
+        min-width: 80px;
+    }
+    table.table th.col-3, table.table td.col-3{
+        min-width: 120px;
+    }
+
+/*---- Начало главной студента ----*/
+.onelinetext{
+    white-space: nowrap;
+    overflow-x: auto;
+}
+@media (min-width: 768px) {
+    .onelinetext{
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+    }
+}
+.point{
+    padding-top: 9px;
+}
+.point::before{
+    position: relative;
+    color: #424242;
+    line-height: 0;
+    font-size: 27pt;
+    content: "•";
+    z-index: 100;
+}
+.line{
+    background-color: #424242;
+    bottom: 39px;
+    content: "";
+    display: block;
+    left: 46.5px;
+    position: absolute;
+    top: 61px;
+    width: 2px;
+}
+.shade{
+    pointer-events:none;
+    height: 100%;
+    right: 15px;
+    position: absolute;
+    width: 15px;
+    z-index: 1;
+    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(left, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
+}
+/* хром, сафари */
+div::-webkit-scrollbar { display:  none; }
+/* ie 10+ */
+div { -ms-overflow-style: none; }
+.pt10{
+    font-size: 10pt;
+}
+.arrow {
+    margin-top: 100px;
+    line-height: 1;
+    padding: 0 4px 3px 4px;
+    border: 1px solid #dee2e6;
+    text-shadow: 0 0 15px rgba(255,255,255,.5), 0 0 10px rgba(255,255,255,.5), 0px 0px 1px #000000;
+}
+.arrow.left{
+    padding: 0 4px 3px 4px !important;
+}
+.arrow.right{
+    padding: 0 3px 3px 5px !important;
+}
+.arrow:hover{
+    text-shadow: none;
+    color:white;
+    background-color: rgba(29,32,34,.7);
+    border-color: rgba(255,255,255,0);
+}

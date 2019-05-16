@@ -1,15 +1,11 @@
 {% extends "layout.html" %}
 
-{% block head-block %}
-
-{% endblock %}
-
 {% block lb-block %}
 <div>
-    Предмет: {{ task.taught_subjects.all.0.subject }}
+    ПОФИКСИТЬКурс: {{ task.teacher_subjects.all.0.subject }}
 </div>
 <div>
-    Преподаватель: <a href="">{{ task.taught_subjects.all.0.teacher }}</a>
+    Преподаватель: <a href="">{{ task.teacher_subjects.all.0.teacher }}</a>
 </div>
 <div class="mb-3">
     До: {{ task.end_date }}
@@ -21,16 +17,170 @@
 {% endif %}
 {% if files %}
     {% for file in files %}
-    <div>
-    {% if file.css_class == 'word'%}
-    <i class="fas fa-file-word"></i>
-    {% endif %}
-    <a href="{{ file.file.url }}">{{ file }}</a>
-    </div>
+        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+            {% if file.css_class == 'word'%}
+            <i class="fas fa-file-word mr-2 ml-1"></i>
+            {% endif %}
+            {{ file }}
+        </a>
     {% endfor %}
+{% endif %}
+{% if user.is_student %}
+{% if completed_task %}
+    <div class="p-4 rounded stylish-color text-white mt-3">
+        <div class="col-12 mb-3 p-0">Отправелно:</div>
+        <div class="col-12 text-white-50 p-0 mb-3">{{ completed_task.text }}</div>
+        <div class="col-12 pl-0 mb-3">
+        <div class="mb-2 d-inline-block mr-2">Отправленные файлы:</div>
+        {% for file in completed_task_files %}
+        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+            {% if file.css_class == 'word'%}
+            <i class="fas fa-file-word mr-2 ml-1"></i>
+            {% endif %}
+            {{ file }}
+        </a>
+        {% endfor %}
+        </div>
+    {% if form %}
+    <button type="button" class="btn btn-primary m-0 btn-block col-12 col-md-2" data-toggle="modal" data-target=".bd-example-modal-xl">Изменить</button>
+    {% endif %}
+    </div>
+    {% if form %}
+    <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
+        <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="m-0">Редактировать</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.text }}
+            </div>
+            <div class="d-flex flex-wrap justify-content-between mt-3">
+                <div class="file-field col-12 col-lg-8 pl-0 pr-0">
+                    <div class="btn btn-primary btn-sm float-left">
+                        <span>{{ form.files.label }}</span>
+                        {{ form.files }}
+                    </div>
+                    <div class="file-path-wrapper">
+                        <input class="file-path validate form-control" type="text" placeholder="Загрузите один или более файлов">
+                    </div>
+                </div>
+                <button type="submit" class="btn order-1 order-md-0 btn-primary btn-sm btn-block float-right col-12 col-lg-2 mt-2 mt-lg-0 mb-1">Отправить</button>
+                <div class="col-12 pl-0 order-0 order-md-1 order-md small h6 font-weight-normal text-muted mb-2 mt-2 mb-md-0 mt-md-0">Внимание! Изменение файлов удалит все ранее загруженные файлы. Скачайте их, чтобы не потерять.</div>
+            </div>
+            </form>
+            </div>
+        </div>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+    <hr>
+    <h6 class="font-weight-normal mb-3 text-muted">Задание не сдано</h6>
+    <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.text }}
+    </div>
+    <div class="d-flex flex-wrap justify-content-between mt-3">
+        <div class="file-field col-12 col-lg-8 pl-0 pr-0">
+            <div class="btn btn-primary btn-sm float-left">
+                <span>{{ form.files.label }}</span>
+                {{ form.files }}
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate form-control" type="text" placeholder="Загрузите один или более файлов">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-2 mt-2 mt-lg-0 mb-1">Отправить</button>
+    </div>
+    </form>
+{% endif %}
+{% endif %}
+{% if user.is_teacher and marks %}
+<hr>
+<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
+<caption>Список оценок</caption>
+<thead>
+    <tr class="d-flex">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-6 pr-1 pl-3">ФИО</th>
+    <th class="th-sm col-3 pr-1 pl-3">Дата</th>
+    <th class="th-sm col-2 pr-1 pl-3">Баллы</th>
+    </tr>
+</thead>
+<tbody>
+{% for mark in marks %}
+{% with mark.student.student as student %}
+<div>
+<tr class="d-flex">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-6 pr-1"><a href="">{{ student.user.last_name }} {{ student.user.first_name }} {{ student.user.patronymic }}</a></td>
+    <td class="col-3 pr-1">{{ mark.date }}</td>
+    <td class="col-2 pr-1">{{ mark.points }}</td>
+</tr>
+</div>
+{% endwith %}
+{% endfor %}
+</tbody>
+</table>
 {% endif %}
 {% endblock %}
 
 {% block rt-block %}
-
+{% if user.is_teacher and form%}
+<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Поставить оценку</button>
+<div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="m-0">Поставить оценку</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="d-flex flex-wrap justify-content-between mt-0">
+                <div class="form-group col-12 col-md-9 pl-0 pr-0 pr-md-3 mb-0">
+                    {{ form.student.label_tag }}
+                    {{ form.student }}
+                </div>
+                <div class="form-group col-12 col-md-3 p-0 mb-0">
+                    {{ form.points.label_tag }}
+                    {{ form.points }}
+                </div>
+            </div>
+            <div class="d-flex flex-wrap justify-content-between mt-3 mt-md-0">
+                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Выставить</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+</div>
+<script type="text/javascript">
+// Material Select Initialization
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
+{% if user.is_teacher and marks %}
+$('#stable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false
+}]
+});
+{% endif %}
+});
+</script>
+{% endif %}
 {% endblock %}
