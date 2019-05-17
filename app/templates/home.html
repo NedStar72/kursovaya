@@ -171,6 +171,12 @@
                 {{ form.text.label_tag }}
                 {{ form.text }}
             </div>
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    {{ form.is_reciprocal }}
+                    <label class="custom-control-label" for="{{ form.is_reciprocal.id_for_label }}">{{ form.is_reciprocal.label }}</label>
+                </div>
+            </div>
             <div class="d-flex flex-wrap justify-content-between mt-3">
                 <div class="file-field col-12 col-lg-8 pl-0 pr-0">
                     <div class="btn btn-primary btn-sm float-left">

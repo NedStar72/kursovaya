@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+123
+<script>
+$(document).ready(function () {
+$('#stable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false
+}]
+});
+});
+</script>
+{% endblock %}
+
+{% block rt-block %}
+
+{% endblock %}

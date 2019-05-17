@@ -182,3 +182,13 @@ div { -ms-overflow-style: none; }
     background-color: rgba(29,32,34,.7);
     border-color: rgba(255,255,255,0);
 }
+
+
+
+
+
+
+
+.text-white-75 {
+    color: rgba(255, 255, 255, 0.75) !important;
+}

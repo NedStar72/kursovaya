@@ -199,19 +199,20 @@ class CourseAddForm(forms.ModelForm):
                                          }))
 
     class Meta:
-        model = models.StudentTeacherSubject
+        model = models.TeacherSubject
         fields = ['subject', 'day_of_week', 'time', 'teacher', 'students']
 
     @transaction.atomic
     def save(self, commit=True):
-        course_l = models.TeacherSubject.objects.create(teacher=self.cleaned_data.get('teacher'),
-                                                        subject=self.cleaned_data.get('subject'),
-                                                        day_of_week=self.cleaned_data.get('day_of_week'),
-                                                        time=datetime.datetime.strptime(self.cleaned_data.get('time'), '%H:%M').time())
-        for student in self.cleaned_data.get('students'):
-            models.StudentTeacherSubject.objects.create(student=models.Student.objects.get(pk=int(student)),
-                                                        teacher_subject=course_l)
-        return models.StudentTeacherSubject.objects.latest('pk')
+        course = models.TeacherSubject.objects.create(teacher=self.cleaned_data.get('teacher'),
+                                                      subject=self.cleaned_data.get('subject'),
+                                                      day_of_week=self.cleaned_data.get('day_of_week'),
+                                                      time=datetime.datetime.strptime(self.cleaned_data.get('time'),
+                                                                                      '%H:%M').time())
+        students = [student_t[0] for student_t in self.cleaned_data.get('students')]
+        students = models.Student.objects.filter(user_id__in=students)
+        course.students.add(*students)
+        return course
 
 
 class TaskAddForm(forms.ModelForm):
@@ -232,25 +233,32 @@ class TaskAddForm(forms.ModelForm):
                                 'multiple': True,
                             }))
 
+    is_reciprocal = forms.BooleanField(initial=False, required=False,
+                                       label='Разрешить ответы',
+                                       widget=forms.CheckboxInput({
+                                           'class': 'custom-control-input'
+                                       }))
+
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('label_suffix', '')
-        teacher = kwargs.pop('teacher', 0)
-        super(TaskAddForm, self).__init__(*args, **kwargs)
-        self.fields['teacher_subjects'] = forms.MultipleChoiceField(
-            choices=[(x.pk, x.subject.__str__() + ' (' + x.get_day() + ', ' + x.time.strftime('%H:%M') + ')')
-                     for x in models.TeacherSubject.objects.filter(teacher=teacher)],
-            widget=forms.SelectMultiple(attrs={
-                'placeholder': 'Выберите предметы',
-                'multiple': '',
-                'class': 'mdb-select',
-                'searchable': 'Пойск',
-            }),
-            label='Курсы')
-        self.fields['text'].required = False
+        teacher = kwargs.pop('teacher', None)
+        if teacher:
+            super(TaskAddForm, self).__init__(*args, **kwargs)
+            self.fields['teacher_subjects'] = forms.MultipleChoiceField(
+                choices=[(x.pk, x.subject.__str__() + ' (' + x.get_day() + ', ' + x.time.strftime('%H:%M') + ')')
+                         for x in teacher.teacher_subjects.all()],
+                widget=forms.SelectMultiple(attrs={
+                    'placeholder': 'Выберите предметы',
+                    'multiple': '',
+                    'class': 'mdb-select',
+                    'searchable': 'Пойск',
+                }),
+                label='Курсы')
+            self.fields['text'].required = False
 
     class Meta:
         model = models.Task
-        fields = ['name', 'teacher_subjects', 'end_date', 'text', 'files']
+        fields = ['name', 'teacher_subjects', 'end_date', 'text', 'is_reciprocal', 'files']
         labels = {
             'text': 'Текст',
         }
@@ -290,8 +298,7 @@ class CompletedTaskAddForm(forms.ModelForm):
             raise Exception('student=None')
         kwargs.setdefault('label_suffix', '')
         super(CompletedTaskAddForm, self).__init__(*args, **kwargs)
-        courses = [x.teacher_subject for x in models.StudentTeacherSubject.objects.filter(student=student)]
-        self.fields['task'].queryset = models.Task.objects.filter(teacher_subjects__in=courses)
+        self.fields['task'].queryset = models.Task.objects.filter(teacher_subjects__in=student.teacher_subjects.all())
 
     @transaction.atomic
     def save(self, commit=True):
@@ -305,59 +312,52 @@ class CompletedTaskAddForm(forms.ModelForm):
         fields = ['task', 'text', 'files']
 
 
-# class MarkAddForm(forms.ModelForm):
-#     task = forms.ModelChoiceField(required=True,
-#                                   queryset=models.Mark.objects.none(),
-#                                   label='Задание',
-#                                   empty_label='Выберите задание',
-#                                   widget=forms.Select(attrs={
-#                                       'class': 'mdb-select',
-#                                       'searchable': 'Пойск',
-#                                   }))
-#     student = forms.ModelChoiceField(required=True,
-#                                      label='Студент',
-#                                      queryset=models.StudentTeacherSubject.objects.none(),
-#                                      widget=forms.Select(attrs={
-#                                          'class': 'mdb-select',
-#                                          'searchable': 'Пойск',
-#                                      }))
-#     points = forms.FloatField(required=True,
-#                               label='Баллы',
-#                               widget=forms.NumberInput(attrs={
-#                                   'class': 'form-control',
-#                                   'min': '0.5',
-#                                   'max': '100',
-#                                   'placeholder': '-',
-#                                   'step': '0.5',
-#                               }))
-#
-#     def __init__(self, *args, **kwargs):
-#         course = kwargs.pop('course', None)
-#         task = kwargs.pop('task', None)
-#         if course and task:
-#             raise Exception('Не указан курс(course=None) и задание (task=None) одновременно')
-#         kwargs.setdefault('label_suffix', '')
-#         super(MarkAddForm, self).__init__(*args, **kwargs)
-#         if task is None:
-#             self.fields['task'].queryset = models.Task.objects.filter(taught_subjects=course)
-#             self.fields['student'].queryset = models.StudentTeacherSubject.objects.filter(teacher_subject=course)
-#         else:
-#             self.fields['task'].initial = task
-#             self.fields['task'].required = False
-#             students_has_courses = models.StudentTeacherSubject.objects.filter(
-#                 teacher_subject__in=task.taught_subjects.all()
-#             )
-#             self.fields['student'].queryset = students_has_courses
-#     # students = list(dict.fromkeys([(student.student.pk, student.student) for student in students_has_courses]))
-#     # students.sort(key=lambda tup: (tup[1].user.last_name, tup[1].pk))
-#
-#     @transaction.atomic
-#     def save(self, commit=True):
-#         mark = super(MarkAddForm, self).save(commit=False)
-#         if mark.task is None:
-#             mark.task = self.fields['task'].initial
-#         return mark.save()
-#
-#     class Meta:
-#         model = models.Mark
-#         fields = ['task', 'student', 'points']
+class MarkAddForm(forms.ModelForm):
+    task = forms.ModelChoiceField(required=False,
+                                  queryset=models.Task.objects.none(),
+                                  label='Задание',
+                                  empty_label='Выберите задание',
+                                  widget=forms.Select(attrs={
+                                      'class': 'mdb-select',
+                                      'searchable': 'Пойск',
+                                  }))
+    student_teacher_subject = forms.ModelChoiceField(required=True,
+                                                     label='Студент',
+                                                     queryset=models.StudentTeacherSubject.objects.none(),
+                                                     widget=forms.Select(attrs={
+                                                         'class': 'mdb-select',
+                                                         'searchable': 'Пойск',
+                                                     }))
+    points = forms.FloatField(required=True,
+                              label='Баллы',
+                              widget=forms.NumberInput(attrs={
+                                  'class': 'form-control',
+                                  'min': '0.5',
+                                  'max': '100',
+                                  'placeholder': '-',
+                                  'step': '0.5',
+                              }))
+
+    def __init__(self, *args, **kwargs):
+        course = kwargs.pop('course', None)
+        task = kwargs.pop('task', None)
+        if course and task:
+            raise Exception('Не указан курс(course=None) и задание (task=None) одновременно')
+        kwargs.setdefault('label_suffix', '')
+        super(MarkAddForm, self).__init__(*args, **kwargs)
+        if task is None:
+            self.fields['task'].queryset = models.Task.objects.filter(teacher_subjects=course)
+            self.fields['student_teacher_subject'].queryset = \
+                models.StudentTeacherSubject.objects.filter(teacher_subject=course)
+        else:
+            students_has_courses = models.StudentTeacherSubject.objects.filter(
+                teacher_subject__in=task.teacher_subjects.all()
+            ).exclude(marks__task=task)
+            self.fields['student_teacher_subject'].queryset = students_has_courses
+            self.fields['task'].queryset = models.Task.objects.filter(pk=task.pk)
+    # students = list(dict.fromkeys([(student.student.pk, student.student) for student in students_has_courses]))
+    # students.sort(key=lambda tup: (tup[1].user.last_name, tup[1].pk))
+
+    class Meta:
+        model = models.Mark
+        fields = ['task', 'student_teacher_subject', 'points']

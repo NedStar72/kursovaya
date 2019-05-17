@@ -4569,12 +4569,10 @@ a.waves-effect, a.waves-light {
   .btn.btn-md {
     padding: 0.7rem 1.6rem;
     font-size: 0.7rem; }
-    .btn.btn-md .fas, .btn.btn-md .fab, .btn.btn-md .far {
-      font-size: 0.8rem; }
+    .btn.btn-md .fas, .btn.btn-md .fab, .btn.btn-md .far {}
   .btn.btn-sm {
     padding: 0.5rem 1.6rem;}
-    .btn.btn-sm .fas, .btn.btn-sm .fab, .btn.btn-sm .far {
-      font-size: 0.7rem; }
+    .btn.btn-sm .fas, .btn.btn-sm .fab, .btn.btn-sm .far {}
   .btn.btn-tb {
     padding: 0.3rem 1rem; }
   .btn.disabled:active, .btn.disabled:focus, .btn.disabled:hover, .btn:disabled:active, .btn:disabled:focus, .btn:disabled:hover {

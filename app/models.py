@@ -57,7 +57,8 @@ class Specialty(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=127, verbose_name=_(u'Группа'))
     year = models.DateField(verbose_name='Год посутпления')
-    specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, verbose_name='Направление')
+    specialty = models.ForeignKey(Specialty, on_delete=models.SET_NULL, null=True, verbose_name='Направление',
+                                  related_name='groups', related_query_name='groups')
 
     class Meta:
         verbose_name = _(u'Группа')
@@ -71,8 +72,9 @@ class Group(models.Model):
 
 
 class Student(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, verbose_name='Группа')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, verbose_name='Группа',
+                              related_name='students', related_query_name='students')
 
     class Meta:
         verbose_name = _(u'Студент')
@@ -86,7 +88,7 @@ class Student(models.Model):
 
 
 class Teacher(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='teacher')
 
     class Meta:
         verbose_name = _(u'Преподаватель')
@@ -113,37 +115,35 @@ class Subject(models.Model):
 
 class TeacherSubject(models.Model):
     # Мб subject сделать не отдельной таблицей?
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(Teacher, null=True, on_delete=models.SET_NULL)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE, related_name='teacher_subjects',
+                                related_query_name='teacher_subjects')
+    teacher = models.ForeignKey(Teacher, null=True, on_delete=models.SET_NULL, related_name='teacher_subjects',
+                                related_query_name='teacher_subjects')
     day_of_week = DayOfTheWeekField()
     time = models.TimeField(verbose_name=_(u'Время начала пары'))
+    students = models.ManyToManyField(Student, related_name='teacher_subjects', related_query_name='teacher_subjects',
+                                      through='StudentTeacherSubject')
     # Надо добавить время начала предмета и время окончания? (что-то вроде продолжительности курса)
 
     class Meta:
         verbose_name = _(u'Преподаваемый предмет')
         verbose_name_plural = _(u'Преподаваемые предметы')
-        ordering = ['subject', 'teacher', 'day_of_week']
+        ordering = ['subject__name', 'teacher', 'day_of_week']
         db_table = 'Teacher_Subject'
 
     def get_day(self):
         return DAY_OF_THE_WEEK[self.day_of_week]
 
     def __str__(self):
-        return self.subject.__str__() + ' - ' + self.teacher.__str__()
+        return self.subject.__str__()
 
 
 class StudentTeacherSubject(models.Model):
-    student = models.ForeignKey(Student, null=True, on_delete=models.SET_NULL)
-    teacher_subject = models.ForeignKey(TeacherSubject, null=True, on_delete=models.SET_NULL)
-
-    class Meta:
-        verbose_name = 'Студент преподаваемого предмета'
-        verbose_name_plural = 'Студенты преподаваемых предметов'
-        ordering = ['student__user__last_name', 'student__pk']
-        db_table = 'Student_TeacherSubject'
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    teacher_subject = models.ForeignKey(TeacherSubject, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.student.__str__()  # + ' ' + self.teacher_subject.__str__()
+        return self.student.__str__()
 
 
 class Task(models.Model):
@@ -151,13 +151,15 @@ class Task(models.Model):
     text = models.TextField(verbose_name=_(u'Текст'))
     start_date = models.DateField(verbose_name=_(u'Дата начала'), auto_now=True)
     end_date = models.DateField(verbose_name=_(u'Дата окончания'))
-    teacher_subjects = models.ManyToManyField(TeacherSubject)
+    teacher_subjects = models.ManyToManyField(TeacherSubject, related_name='tasks', related_query_name='tasks',
+                                              verbose_name='Курсы')
+    is_reciprocal = models.BooleanField(default=False, verbose_name='Разрешить ответы')
 
     class Meta:
         verbose_name = _(u'Задание')
         verbose_name_plural = _(u'Задания')
         default_related_name = 'tasks'
-        ordering = ['end_date']
+        ordering = ['end_date', 'start_date', 'name']
         db_table = 'Tasks'
 
     def __str__(self):
@@ -165,7 +167,8 @@ class Task(models.Model):
 
 
 class CompletedTask(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='completed_tasks',
+                             related_query_name='completed_tasks')
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     text = models.TextField(verbose_name=_(u'Текст'))
     date = models.DateField(verbose_name=_(u'Дата'), auto_now=True)
@@ -176,6 +179,11 @@ class CompletedTask(models.Model):
         default_related_name = 'completed_tasks'
         ordering = ['date', 'task__name', 'student__user__last_name']
         db_table = 'CompletedTasks'
+
+    def save(self, *args, **kwargs):
+        if self.date != datetime.now().date():
+            self.date = datetime.now().date()
+        super(CompletedTask, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.task.__str__() + ' - ' + self.student.__str__()
@@ -189,8 +197,10 @@ def user_directory_path(instance, filename):
 
 
 class TaskFile(models.Model):
-    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True)
-    completed_task = models.ForeignKey(CompletedTask, on_delete=models.CASCADE, null=True)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, null=True, related_name='files',
+                             related_query_name='files')
+    completed_task = models.ForeignKey(CompletedTask, on_delete=models.CASCADE, null=True,
+                                       related_name='files', related_query_name='files')
     file = models.FileField(upload_to=user_directory_path)
 
     class Meta:
@@ -210,7 +220,7 @@ class TaskFile(models.Model):
         if extension == '.jpg' or extension == '.png':
             return 'photo'
         if extension == '.xls' or extension == '.xlsx':
-            return 'exel'
+            return 'excel'
         if extension == '.txt':
             return 'text'
         return 'other'
@@ -220,7 +230,11 @@ class TaskFile(models.Model):
 
 
 class Mark(models.Model):
-    completed_task = models.ForeignKey(CompletedTask, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='marks', related_query_name='marks',
+                             null=True)
+    student_teacher_subject = models.ForeignKey(StudentTeacherSubject, on_delete=models.CASCADE,
+                                                related_name='marks',
+                                                related_query_name='marks')
     points = models.FloatField(verbose_name='Баллы')
     date = models.DateField(verbose_name='Дата получения', auto_now=True)
 
@@ -228,8 +242,8 @@ class Mark(models.Model):
         verbose_name = _(u'Оценка')
         verbose_name_plural = _(u'Оценки')
         default_related_name = 'marks'
-        ordering = ['date', 'completed_task__task__name', 'completed_task__student__last_name']
+        ordering = ['date']
         db_table = 'Marks'
 
     def __str__(self):
-        return self.completed_task.__str__() + ' : ' + self.points.__str__()
+        return self.task.__str__() + ' : ' + self.points.__str__()

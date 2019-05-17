@@ -19,6 +19,7 @@ urlpatterns = [
     path('group/<int:pk>/', view.GroupView.as_view(), name='group'),
     path('course/add/', view.CourseAddFormView.as_view(), name='add_course'),
     path('course/<int:pk>/', view.CourseView.as_view(), name='course'),
+    path('task/completed/<int:pk>/', view.CompletedTaskView.as_view(), name='completed_task'),
     path('task/<int:pk>/', view.TaskView.as_view(), name='task'),
     path('', view.HomeView.as_view(), name='home'),
 ]

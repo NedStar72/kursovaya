@@ -2,7 +2,31 @@
 
 {% block lb-block %}
 <div>
-    ПОФИКСИТЬКурс: {{ task.teacher_subjects.all.0.subject }}
+    {% if user.is_student %}
+        {% if student_course.count == 1 %}
+            Курс:
+        {% else %}
+            Курсы:
+        {% endif %}
+        {% for course in student_course %}
+            <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
+            {% if not forloop.last %}
+                ,
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% if courses.count == 1 %}
+            Курс:
+        {% else %}
+            Курсы:
+        {% endif %}
+        {% for course in courses %}
+            <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
+            {% if not forloop.last %}
+                ,
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 </div>
 <div>
     Преподаватель: <a href="">{{ task.teacher_subjects.all.0.teacher }}</a>
@@ -18,31 +42,60 @@
 {% if files %}
     {% for file in files %}
         <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+            <i class="fas
             {% if file.css_class == 'word'%}
-            <i class="fas fa-file-word mr-2 ml-1"></i>
+            fa-file-word
+            {% elif file.css_class == 'pdf' %}
+            fa-file-pdf
+            {% elif file.css_class == 'pp' %}
+            fa-file-powerpoint
+            {% elif file.css_class == 'photo' %}
+            fa-file-image
+            {% elif file.css_class == 'excel' %}
+            fa-file-excel
+            {% elif file.css_class == 'text' %}
+            fa-file-alt
+            {% elif file.css_class == 'other' %}
+            fa-file
             {% endif %}
+            mr-2 ml-1"></i>
             {{ file }}
         </a>
     {% endfor %}
 {% endif %}
-{% if user.is_student %}
 {% if completed_task %}
-    <div class="p-4 rounded stylish-color text-white mt-3">
-        <div class="col-12 mb-3 p-0">Отправелно:</div>
-        <div class="col-12 text-white-50 p-0 mb-3">{{ completed_task.text }}</div>
+    <div class="p-4 rounded rgba-green-strong z-depth-1 mt-3">
+        <div class="col-12 mb-3 p-0 text-white h5 font-weight-normal">Отправелно</div>
+        <div class="col-12 text-white-75 p-0 mb-3">{{ completed_task.text }}</div>
+        {% if completed_task_files %}
         <div class="col-12 pl-0 mb-3">
-        <div class="mb-2 d-inline-block mr-2">Отправленные файлы:</div>
-        {% for file in completed_task_files %}
-        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
-            {% if file.css_class == 'word'%}
-            <i class="fas fa-file-word mr-2 ml-1"></i>
-            {% endif %}
-            {{ file }}
-        </a>
-        {% endfor %}
+            <div class="mb-2 d-inline-block mr-2 text-white">Отправленные файлы:</div>
+            {% for file in completed_task_files %}
+                <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+                <i class="fas
+                {% if file.css_class == 'word'%}
+                fa-file-word
+                {% elif file.css_class == 'pdf' %}
+                fa-file-pdf
+                {% elif file.css_class == 'pp' %}
+                fa-file-powerpoint
+                {% elif file.css_class == 'photo' %}
+                fa-file-image
+                {% elif file.css_class == 'excel' %}
+                fa-file-excel
+                {% elif file.css_class == 'text' %}
+                fa-file-alt
+                {% elif file.css_class == 'other' %}
+                fa-file
+                {% endif %}
+                mr-2 ml-1"></i>
+                {{ file }}
+            </a>
+            {% endfor %}
         </div>
+        {% endif %}
     {% if form %}
-    <button type="button" class="btn btn-primary m-0 btn-block col-12 col-md-2" data-toggle="modal" data-target=".bd-example-modal-xl">Изменить</button>
+    <button type="button" class="btn btn-primary waves-effect m-0 btn-block col-12 col-md-2" data-toggle="modal" data-target=".bd-example-modal-xl">Изменить</button>
     {% endif %}
     </div>
     {% if form %}
@@ -72,7 +125,7 @@
                     </div>
                 </div>
                 <button type="submit" class="btn order-1 order-md-0 btn-primary btn-sm btn-block float-right col-12 col-lg-2 mt-2 mt-lg-0 mb-1">Отправить</button>
-                <div class="col-12 pl-0 order-0 order-md-1 order-md small h6 font-weight-normal text-muted mb-2 mt-2 mb-md-0 mt-md-0">Внимание! Изменение файлов удалит все ранее загруженные файлы. Скачайте их, чтобы не потерять.</div>
+                <div class="col-12 pl-0 order-0 order-md-1 order-md small h6 font-weight-normal text-muted mb-2 mt-1 mb-md-0">Внимание! Изменение файлов удалит все ранее загруженные файлы. Скачайте их, чтобы не потерять.</div>
             </div>
             </form>
             </div>
@@ -80,7 +133,7 @@
         </div>
     </div>
     {% endif %}
-{% else %}
+{% elif user.is_student and form %}
     <hr>
     <h6 class="font-weight-normal mb-3 text-muted">Задание не сдано</h6>
     <form method="post" enctype="multipart/form-data">
@@ -102,30 +155,45 @@
     </div>
     </form>
 {% endif %}
-{% endif %}
-{% if user.is_teacher and marks %}
+{% if user.is_teacher and completed_tasks_marks %}
 <hr>
 <table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
-<caption>Список оценок</caption>
+<caption>Список ответов</caption>
 <thead>
     <tr class="d-flex">
-    <th class="th-sm col-1 pr-1 pl-3">#</th>
-    <th class="th-sm col-6 pr-1 pl-3">ФИО</th>
-    <th class="th-sm col-3 pr-1 pl-3">Дата</th>
-    <th class="th-sm col-2 pr-1 pl-3">Баллы</th>
+        <th class="th-sm col-1 pr-1 pl-3">#</th>
+        <th class="th-sm col-6 pr-1 pl-3">ФИО <span class="text-muted">(ссылка на ответ)</span></th>
+        <th class="th-sm col-3 pr-1 pl-3">Дата</th>
+        <th class="th-sm col-2 pr-1 pl-3">Баллы</th>
     </tr>
 </thead>
 <tbody>
-{% for mark in marks %}
-{% with mark.student.student as student %}
+{% for completed_task_mark in completed_tasks_marks %}
+{% with completed_task_mark.0 as c_task %}
+{% with completed_task_mark.1 as mark %}
 <div>
 <tr class="d-flex">
     <td class="col-1 pr-1">{{ forloop.counter }}</td>
-    <td class="col-6 pr-1"><a href="">{{ student.user.last_name }} {{ student.user.first_name }} {{ student.user.patronymic }}</a></td>
-    <td class="col-3 pr-1">{{ mark.date }}</td>
-    <td class="col-2 pr-1">{{ mark.points }}</td>
+    <td class="col-6 pr-1">
+        {% if c_task %}
+        <a href="{% url 'completed_task' pk=c_task.pk %}">
+            {{ c_task.student.user.last_name }} {{ c_task.student.user.first_name }} {{ c_task.student.user.patronymic }}
+        </a>
+        {% else %}
+            {{ mark.student_teacher_subject.student.user.last_name }} {{ mark.student_teacher_subject.student.user.first_name }} {{ mark.student_teacher_subject.student.user.patronymic }}
+        {% endif %}
+    </td>
+    <td class="col-3 pr-1">
+        {% if mark %}
+            {{ mark.date }}
+        {% else %}
+            {{ c_task.date }}
+        {% endif %}
+    </td>
+    <td class="col-2 pr-1">{{ mark.points|default:"-" }}</td>
 </tr>
 </div>
+{% endwith %}
 {% endwith %}
 {% endfor %}
 </tbody>
@@ -150,8 +218,8 @@
             {% csrf_token %}
             <div class="d-flex flex-wrap justify-content-between mt-0">
                 <div class="form-group col-12 col-md-9 pl-0 pr-0 pr-md-3 mb-0">
-                    {{ form.student.label_tag }}
-                    {{ form.student }}
+                    {{ form.student_teacher_subject.label_tag }}
+                    {{ form.student_teacher_subject }}
                 </div>
                 <div class="form-group col-12 col-md-3 p-0 mb-0">
                     {{ form.points.label_tag }}
@@ -166,11 +234,13 @@
     </div>
     </div>
 </div>
+{% endif %}
 <script type="text/javascript">
 // Material Select Initialization
 $(document).ready(function() {
 $('.mdb-select').materialSelect();
-{% if user.is_teacher and marks %}
+$('.dataTables_length').addClass('bs-select');
+{% if user.is_teacher and completed_tasks_marks %}
 $('#stable').DataTable({
 "searching": false,
 "paging": false,
@@ -182,5 +252,4 @@ orderable: false
 {% endif %}
 });
 </script>
-{% endif %}
 {% endblock %}
