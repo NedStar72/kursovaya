@@ -185,6 +185,19 @@ class CompletedTask(models.Model):
             self.date = datetime.now().date()
         super(CompletedTask, self).save(*args, **kwargs)
 
+    def get_mark(self):
+        try:
+            return Mark.objects.get(
+                task=self.task,
+                student_teacher_subject=StudentTeacherSubject.objects.filter(
+                    student=self.student,
+                    teacher_subject__in=self.task.teacher_subjects.all()
+                ).first()
+            )
+        except:
+            return None
+
+
     def __str__(self):
         return self.task.__str__() + ' - ' + self.student.__str__()
 

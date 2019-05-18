@@ -1,6 +1,7 @@
 import datetime
 import operator
 from django import forms
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.db import transaction
@@ -222,7 +223,7 @@ class TaskAddForm(forms.ModelForm):
                                'placeholder': 'Введите название',
                            }))
 
-    end_date = forms.DateField(label='Дата окончания', input_formats=['%d/%m/%Y'],
+    end_date = forms.DateField(label='Дата окончания', input_formats=['%d/%m/%Y', '%d.%m.%Y'],
                                widget=forms.DateInput(attrs={
                                    'class': 'form-control datepicker',
                                    'placeholder': 'Выберите дату',
@@ -330,12 +331,12 @@ class MarkAddForm(forms.ModelForm):
                                                      }))
     points = forms.FloatField(required=True,
                               label='Баллы',
+                              validators=[MinValueValidator(-100), MaxValueValidator(100)],
                               widget=forms.NumberInput(attrs={
                                   'class': 'form-control',
-                                  'min': '0.5',
+                                  'min': '-100',
                                   'max': '100',
                                   'placeholder': '-',
-                                  'step': '0.5',
                               }))
 
     def __init__(self, *args, **kwargs):
@@ -352,7 +353,7 @@ class MarkAddForm(forms.ModelForm):
         else:
             students_has_courses = models.StudentTeacherSubject.objects.filter(
                 teacher_subject__in=task.teacher_subjects.all()
-            ).exclude(marks__task=task)
+            )
             self.fields['student_teacher_subject'].queryset = students_has_courses
             self.fields['task'].queryset = models.Task.objects.filter(pk=task.pk)
     # students = list(dict.fromkeys([(student.student.pk, student.student) for student in students_has_courses]))

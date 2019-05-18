@@ -204,6 +204,7 @@
 {% block rt-block %}
 {% if user.is_teacher and form%}
 <button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Поставить оценку</button>
+<a class="btn btn-primary m-0 btn-block mt-2" href="{% url 'task_edit' pk=task.pk %}">Редактировать</a>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog">
     <div class="modal-content">

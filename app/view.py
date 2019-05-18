@@ -8,14 +8,15 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login
+from django.urls import reverse
 
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
-
 from django.contrib.auth.forms import UserCreationForm
+
 import app.models as models
 import app.forms as forms
 
@@ -184,7 +185,14 @@ class CourseView(LoginRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         if request.user.is_teacher:
-            form = forms.MarkAddForm(request.POST, course=self.get_object())
+            mark = models.Mark.objects.filter(student_teacher_subject__pk=request.POST['student_teacher_subject'],
+                                              task__isnull=True).first()
+            if mark:
+                request.POST = request.POST.copy()
+                request.POST['points'] = float(request.POST['points']) + mark.points
+                form = forms.MarkAddForm(request.POST, course=self.get_object(), instance=mark)
+            else:
+                form = forms.MarkAddForm(request.POST, course=self.get_object())
             if form.is_valid():
                 form.save()
                 return redirect('course', pk=self.get_object().pk)
@@ -209,7 +217,6 @@ class CourseView(LoginRequiredMixin, DetailView):
         return context
 
 
-# изменить порядок в get используя get_object
 class TaskView(LoginRequiredMixin, DetailView):
     model = models.Task
     template_name = 'task_page.html'
@@ -244,7 +251,7 @@ class TaskView(LoginRequiredMixin, DetailView):
             if form.is_valid():
                 completed_task = form.save()
                 files = request.FILES.getlist('files')
-                if files.__len__ != 0:
+                if files.__len__() != 0:
                     completed_task.files.all().delete()
                 for file in files:
                     models.TaskFile.objects.create(completed_task=completed_task, file=file)
@@ -253,7 +260,12 @@ class TaskView(LoginRequiredMixin, DetailView):
             request.POST = request.POST.copy()
             task = self.get_object()
             request.POST['task'] = task.pk
-            form = forms.MarkAddForm(request.POST, task=task)
+            mark = models.Mark.objects.filter(student_teacher_subject__pk=request.POST['student_teacher_subject'],
+                                              task=task).first()
+            if mark:
+                form = forms.MarkAddForm(request.POST, task=task, instance=mark)
+            else:
+                form = forms.MarkAddForm(request.POST, task=task)
             if form.is_valid():
                 form.save()
                 return redirect('task', pk=self.get_object().pk)
@@ -290,6 +302,35 @@ class TaskView(LoginRequiredMixin, DetailView):
             context['form'] = forms.MarkAddForm(task=task)
         context['files'] = task.files.all()
         context['title'] = "Задание: " + task.name
+        return context
+
+
+class TaskEditView(LoginRequiredMixin, UpdateView):
+    model = models.Task
+    form_class = forms.TaskAddForm
+    template_name = 'task_edit.html'
+
+    def get_form_kwargs(self):
+        kwargs = super(TaskEditView, self).get_form_kwargs()
+        if self.request.user.is_teacher:
+            kwargs['teacher'] = self.request.user.teacher
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        files = request.FILES.getlist('files')
+        task = self.get_object()
+        if files.__len__() != 0:
+            task.files.all().delete()
+            for file in files:
+                models.TaskFile.objects.create(task=task, file=file)
+        return super(TaskEditView, self).post(request, *args, **kwargs)
+
+    def get_success_url(self, **kwargs):
+        return reverse('task', kwargs={'pk': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        context = super(TaskEditView, self).get_context_data(**kwargs)
+        context['title'] = 'Редактировать задание'
         return context
 
 
@@ -365,7 +406,29 @@ class CompletedTaskView(LoginRequiredMixin, DetailView):
             return redirect('/')
         return super(CompletedTaskView, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        if request.user.is_teacher:
+            request.POST = request.POST.copy()
+            completed_task = self.get_object()
+            task = completed_task.task
+            request.POST['task'] = task.pk
+            request.POST['student_teacher_subject'] = models.StudentTeacherSubject.objects.filter(
+                student=completed_task.student, teacher_subject__in=task.teacher_subjects.all()
+            ).first().pk
+            mark = completed_task.get_mark()
+            if mark:
+                form = forms.MarkAddForm(request.POST, task=task, instance=mark)
+            else:
+                form = forms.MarkAddForm(request.POST, task=task)
+            if form.is_valid():
+                form.save()
+                return redirect('task', pk=self.get_object().pk)
+        return redirect('/')
+
     def get_context_data(self, **kwargs):
         context = super(CompletedTaskView, self).get_context_data(**kwargs)
-        context['title'] = "Ответ: " + self.get_object().task.name
+        completed_task = context['completed_task']
+        context['form'] = forms.MarkAddForm(task=completed_task.task)
+        context['files'] = models.TaskFile.objects.filter(completed_task=completed_task)
+        context['title'] = "Ответ: " + completed_task.task.name
         return context

@@ -1,21 +1,80 @@
 {% extends "layout.html" %}
 
 {% block lb-block %}
-123
+<div class="d-flex flex-wrap">
+    <div class="col-12 p-0">Отправитель: <a href="">{{ completed_task.student }}</a></div>
+    <div class="col-12 p-0 mb-3">Задача: <a href="{% url 'task' pk=completed_task.task.pk %}">{{ completed_task.task }}</a></div>
+    <div class="col-12 p-0 mb-3">Баллы: {{ completed_task.get_mark.points|default:'-' }}</div>
+    <div class="col-12 p-0 mb-3">
+        <p class="mb-1">Отправленный текст:</p>
+        <p>
+            {% if completed_task.text %}
+                {{ completed_task.text }}
+            {% else %}
+                    <span class="text-muted">Текст отсутствует.</span>
+            {% endif %}
+        </p>
+    </div>
+    {% if files %}
+    <div class="col-12 pl-0 mb-3">
+    {% for file in files %}
+        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+        <i class="fas
+        {% if file.css_class == 'word'%}
+        fa-file-word
+        {% elif file.css_class == 'pdf' %}
+        fa-file-pdf
+        {% elif file.css_class == 'pp' %}
+        fa-file-powerpoint
+        {% elif file.css_class == 'photo' %}
+        fa-file-image
+        {% elif file.css_class == 'excel' %}
+        fa-file-excel
+        {% elif file.css_class == 'text' %}
+        fa-file-alt
+        {% elif file.css_class == 'other' %}
+        fa-file
+        {% endif %}
+        mr-2 ml-1"></i>
+        {{ file }}
+    </a>
+    {% endfor %}
+    </div>
+    {% endif %}
+</div>
 <script>
-$(document).ready(function () {
-$('#stable').DataTable({
-"searching": false,
-"paging": false,
-"info": false,
-columnDefs: [{
-orderable: false
-}]
-});
+$(document).ready(function() {
+$('.mdb-select').materialSelect();
 });
 </script>
 {% endblock %}
 
 {% block rt-block %}
-
+{% if user.is_teacher %}
+<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Поставить оценку</button>
+<div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="m-0">Поставить оценку</h2>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="modal-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.points.label_tag }}
+                {{ form.points }}
+            </div>
+            <div class="d-flex flex-wrap justify-content-between mt-3 mt-md-0">
+                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Выставить</button>
+            </div>
+        </form>
+        </div>
+    </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

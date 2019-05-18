@@ -7,37 +7,7 @@
 <div class="mb-3">
     Время пары: {{ course.get_day }}, {{ course.time }}
 </div>
-<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
-<caption>Список студентов</caption>
-<thead>
-    <tr class="d-flex">
-    <th class="th-sm col-1 pr-1 pl-3">#</th>
-    <th class="th-sm col-3 pr-1 pl-3">Фамилия</th>
-    <th class="th-sm col-2 pr-1 pl-3">Имя</th>
-    <th class="th-sm col-2 pr-1">Отчество</th>
-    <th class="th-sm col-2 pr-1 pl-3">Группа</th>
-    <th class="th-sm col-2 pr-1 pl-3">Баллов</th>
-    </tr>
-</thead>
-<tbody>
-{% for s_m in students_marks %}
-<div>
-<tr class="d-flex">
-    <td class="col-1 pr-1">{{ forloop.counter }}</td>
-    <td class="col-3 pr-1"><a href="">{{ s_m.0.user.last_name }}</a></td>
-    <td class="col-2 pr-1">{{ s_m.0.user.first_name }}</td>
-    <td class="col-2 pr-1">{{ s_m.0.user.patronymic }}</td>
-    <td class="col-2 pr-1"><a href="{% url 'group' pk=s_m.0.group.pk %}">{{ s_m.0.group }}</a></td>
-    <td class="col-2 pr-1">{{ s_m.1 }}</td>
-</tr>
-</div>
-{% empty %}
-    Список пуст.
-{% endfor %}
-</tbody>
-</table>
 {% if tasks %}
-<hr class="mt-1">
 <table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="ttable">
 <caption>Список заданий</caption>
 <thead>
@@ -59,12 +29,66 @@
 {% endfor %}
 </tbody>
 </table>
+<hr class="mt-1">
 {% endif %}
+<table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
+<caption>Список студентов</caption>
+<thead>
+    <tr class="d-flex">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-3 pr-1 pl-3">Фамилия</th>
+    <th class="th-sm col-2 pr-1 pl-3">Имя</th>
+    <th class="th-sm col-2 pr-1">Отчество</th>
+    <th class="th-sm col-2 pr-1 pl-3">Группа</th>
+    <th class="th-sm col-2 pr-1 pl-3">Баллы</th>
+    </tr>
+</thead>
+<tbody>
+{% for s_m in students_marks %}
+<div>
+<tr class="d-flex">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-3 pr-1"><a href="">{{ s_m.0.user.last_name }}</a></td>
+    <td class="col-2 pr-1">{{ s_m.0.user.first_name }}</td>
+    <td class="col-2 pr-1">{{ s_m.0.user.patronymic }}</td>
+    <td class="col-2 pr-1"><a href="{% url 'group' pk=s_m.0.group.pk %}">{{ s_m.0.group }}</a></td>
+    <td class="col-2 pr-1">{{ s_m.1 }}</td>
+</tr>
+</div>
+{% empty %}
+    Список пуст.
+{% endfor %}
+</tbody>
+</table>
+<script>
+$(document).ready(function () {
+$('#stable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false,
+targets: 3
+}]
+});
+$('#ttable').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false,
+targets: 1
+}]
+});
+$('.dataTables_length').addClass('bs-select');
+$('.mdb-select').materialSelect();
+});
+</script>
 {% endblock %}
 
 {% block rt-block %}
 {% if user.is_teacher %}
-<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Добавить баллов</button>
+<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Допольнительные баллы</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -96,29 +120,4 @@
     </div>
 </div>
 {% endif %}
-
-<script>
-$(document).ready(function () {
-$('#stable').DataTable({
-"searching": false,
-"paging": false,
-"info": false,
-columnDefs: [{
-orderable: false,
-targets: 3
-}]
-});
-$('#ttable').DataTable({
-"searching": false,
-"paging": false,
-"info": false,
-columnDefs: [{
-orderable: false,
-targets: 1
-}]
-});
-$('.dataTables_length').addClass('bs-select');
-$('.mdb-select').materialSelect();
-});
-</script>
 {% endblock %}
