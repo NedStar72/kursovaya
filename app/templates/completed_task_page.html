@@ -69,12 +69,17 @@ $('.mdb-select').materialSelect();
                 {{ form.points }}
             </div>
             <div class="d-flex flex-wrap justify-content-between mt-3 mt-md-0">
-                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Выставить</button>
+                <button type="submit" class="btn btn-primary btn-sm btn-block col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Выставить</button>
             </div>
         </form>
         </div>
     </div>
     </div>
 </div>
+{% elif user.is_student %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger btn-sm btn-block">Удалить</button>
+</form>
 {% endif %}
 {% endblock %}

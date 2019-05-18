@@ -162,6 +162,7 @@ div::-webkit-scrollbar { display:  none; }
 div { -ms-overflow-style: none; }
 .pt10{
     font-size: 10pt;
+    line-height: 1 !important;
 }
 .arrow {
     margin-top: 100px;

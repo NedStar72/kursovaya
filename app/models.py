@@ -162,6 +162,12 @@ class Task(models.Model):
         ordering = ['end_date', 'start_date', 'name']
         db_table = 'Tasks'
 
+    def delete(self, using=None, keep_parents=False):
+        files = TaskFile.objects.filter(task=self)
+        for file in files:
+            file.delete()
+        super(Task, self).delete(using, keep_parents)
+
     def __str__(self):
         return self.name.__str__()
 
@@ -197,6 +203,14 @@ class CompletedTask(models.Model):
         except:
             return None
 
+    def delete(self, using=None, keep_parents=False):
+        files = TaskFile.objects.filter(completed_task=self)
+        for file in files:
+            file.delete()
+        # mark = self.get_mark()
+        # if mark:
+        #     mark.delete()
+        super(CompletedTask, self).delete(using, keep_parents)
 
     def __str__(self):
         return self.task.__str__() + ' - ' + self.student.__str__()
@@ -257,6 +271,14 @@ class Mark(models.Model):
         default_related_name = 'marks'
         ordering = ['date']
         db_table = 'Marks'
+
+    def get_completed_task(self):
+        try:
+            return CompletedTask.objects.get(
+                task=self.task, student=self.student_teacher_subject.student
+            )
+        except:
+            return None
 
     def __str__(self):
         return self.task.__str__() + ' : ' + self.points.__str__()

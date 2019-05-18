@@ -11,7 +11,7 @@ from django.contrib.auth import login
 from django.urls import reverse
 
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
@@ -238,37 +238,49 @@ class TaskView(LoginRequiredMixin, DetailView):
 
     def post(self, request, *args, **kwargs):
         if request.user.is_student:
-            request.POST = request.POST.copy()
-            request.POST['task'] = self.get_object().pk
-            try:
+            if request.POST.__len__() == 1:
                 c_t = models.CompletedTask.objects.get(student=request.user.student, task=self.get_object())
-            except Exception:
-                c_t = None
-            if c_t:
-                form = forms.CompletedTaskAddForm(request.POST, student=request.user.student, instance=c_t)
+                pk = c_t.task.teacher_subjects.filter(students=self.request.user.student).first().pk
+                c_t.delete()
+                return redirect('course', pk=pk)
             else:
-                form = forms.CompletedTaskAddForm(request.POST, student=request.user.student)
-            if form.is_valid():
-                completed_task = form.save()
-                files = request.FILES.getlist('files')
-                if files.__len__() != 0:
-                    completed_task.files.all().delete()
-                for file in files:
-                    models.TaskFile.objects.create(completed_task=completed_task, file=file)
-                return redirect('task', pk=self.get_object().pk)
+                request.POST = request.POST.copy()
+                request.POST['task'] = self.get_object().pk
+                try:
+                    c_t = models.CompletedTask.objects.get(student=request.user.student, task=self.get_object())
+                except Exception:
+                    c_t = None
+                if c_t:
+                    form = forms.CompletedTaskAddForm(request.POST, student=request.user.student, instance=c_t)
+                else:
+                    form = forms.CompletedTaskAddForm(request.POST, student=request.user.student)
+                if form.is_valid():
+                    completed_task = form.save()
+                    files = request.FILES.getlist('files')
+                    if files.__len__() != 0:
+                        completed_task.files.all().delete()
+                    for file in files:
+                        models.TaskFile.objects.create(completed_task=completed_task, file=file)
+                    return redirect('task', pk=self.get_object().pk)
         elif request.user.is_teacher:
-            request.POST = request.POST.copy()
-            task = self.get_object()
-            request.POST['task'] = task.pk
-            mark = models.Mark.objects.filter(student_teacher_subject__pk=request.POST['student_teacher_subject'],
-                                              task=task).first()
-            if mark:
-                form = forms.MarkAddForm(request.POST, task=task, instance=mark)
+            if request.POST.__len__() == 1:
+                task = self.get_object()
+                pk = task.teacher_subjects.first().pk
+                task.delete()
+                return redirect('course', pk=pk)
             else:
-                form = forms.MarkAddForm(request.POST, task=task)
-            if form.is_valid():
-                form.save()
-                return redirect('task', pk=self.get_object().pk)
+                request.POST = request.POST.copy()
+                task = self.get_object()
+                request.POST['task'] = task.pk
+                mark = models.Mark.objects.filter(student_teacher_subject__pk=request.POST['student_teacher_subject'],
+                                                  task=task).first()
+                if mark:
+                    form = forms.MarkAddForm(request.POST, task=task, instance=mark)
+                else:
+                    form = forms.MarkAddForm(request.POST, task=task)
+                if form.is_valid():
+                    form.save()
+                    return redirect('task', pk=self.get_object().pk)
         return redirect('/')
 
     def get_context_data(self, **kwargs):
@@ -283,13 +295,13 @@ class TaskView(LoginRequiredMixin, DetailView):
             except models.CompletedTask.DoesNotExist:
                 context['completed_task'] = None
             if context['completed_task'] is None:
-                if task.is_reciprocal:
+                if task.end_date >= datetime.now().date() and task.is_reciprocal:
                     context['form'] = forms.CompletedTaskAddForm(student=student)
                 else:
                     context['form'] = None
             else:
                 context['completed_task_files'] = context['completed_task'].files.all()
-                if context['completed_task'].task.end_date > datetime.now().date() and task.is_reciprocal:
+                if task.end_date >= datetime.now().date() and task.is_reciprocal:
                     context['form'] = forms.CompletedTaskAddForm(student=student, instance=context['completed_task'])
                 else:
                     context['form'] = None
@@ -400,11 +412,10 @@ class CompletedTaskView(LoginRequiredMixin, DetailView):
     context_object_name = 'completed_task'
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_student and self.get_object().student != self.request.user.student or \
-                self.request.user.is_teacher and \
-                self.get_object().task.teacher_subjects.first().teacher != self.request.user.teacher:
-            return redirect('/')
-        return super(CompletedTaskView, self).get(request, *args, **kwargs)
+        if self.request.user.is_teacher and \
+                self.get_object().task.teacher_subjects.first().teacher == self.request.user.teacher:
+            return super(CompletedTaskView, self).get(request, *args, **kwargs)
+        return redirect('/')
 
     def post(self, request, *args, **kwargs):
         if request.user.is_teacher:
@@ -422,7 +433,7 @@ class CompletedTaskView(LoginRequiredMixin, DetailView):
                 form = forms.MarkAddForm(request.POST, task=task)
             if form.is_valid():
                 form.save()
-                return redirect('task', pk=self.get_object().pk)
+                return redirect('task', pk=self.get_object().task.pk)
         return redirect('/')
 
     def get_context_data(self, **kwargs):
