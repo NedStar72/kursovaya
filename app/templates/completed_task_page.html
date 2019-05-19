@@ -4,10 +4,17 @@
 <div class="d-flex flex-wrap">
     <div class="col-12 p-0">Отправитель: <a href="">{{ completed_task.student }}</a></div>
     <div class="col-12 p-0 mb-3">Задача: <a href="{% url 'task' pk=completed_task.task.pk %}">{{ completed_task.task }}</a></div>
-    <div class="col-12 p-0 mb-3">Баллы: {{ completed_task.get_mark.points|default:'-' }}</div>
+    <div class="col-12 p-0 mb-3">
+        Баллы:
+        {% if completed_task.get_mark.points %}
+        <span class="d-inline-block p-2 ml-1 rgba-green-strong text-white rounded pt10">{{ completed_task.get_mark.points }}</span>
+        {% else %}
+        <span class="d-inline-block p-2 ml-1 rgba-grey-light text-white rounded pt10">---</span>
+        {% endif %}
+    </div>
     <div class="col-12 p-0 mb-3">
         <p class="mb-1">Отправленный текст:</p>
-        <p>
+        <p class="grey lighten-4 p-2 rounded mb-0">
             {% if completed_task.text %}
                 {{ completed_task.text }}
             {% else %}

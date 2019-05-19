@@ -295,6 +295,12 @@ class TaskView(LoginRequiredMixin, DetailView):
             except models.CompletedTask.DoesNotExist:
                 context['completed_task'] = None
             if context['completed_task'] is None:
+                context['mark'] = models.Mark.objects.filter(
+                    task=task,
+                    student_teacher_subject__in=models.StudentTeacherSubject.objects.filter(
+                        student=student
+                    )
+                ).first()
                 if task.end_date >= datetime.now().date() and task.is_reciprocal:
                     context['form'] = forms.CompletedTaskAddForm(student=student)
                 else:

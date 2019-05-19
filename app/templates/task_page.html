@@ -1,44 +1,52 @@
 {% extends "layout.html" %}
 
 {% block lb-block %}
-<div>
-    {% if user.is_student %}
-        {% if student_course.count == 1 %}
-            Курс:
-        {% else %}
-            Курсы:
-        {% endif %}
-        {% for course in student_course %}
-            <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
-            {% if not forloop.last %}
-                ,
+
+<div class="d-flex flex-column">
+    <div>
+        {% if user.is_student %}
+            {% if student_course.count == 1 %}
+                Курс:
+            {% else %}
+                Курсы:
             {% endif %}
-        {% endfor %}
-    {% else %}
-        {% if courses.count == 1 %}
-            Курс:
+            {% for course in student_course %}
+                <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
+                {% if not forloop.last %}
+                    ,
+                {% endif %}
+            {% endfor %}
         {% else %}
-            Курсы:
-        {% endif %}
-        {% for course in courses %}
-            <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
-            {% if not forloop.last %}
-                ,
+            {% if courses.count == 1 %}
+                Курс:
+            {% else %}
+                Курсы:
             {% endif %}
-        {% endfor %}
-    {% endif %}
+            {% for course in courses %}
+                <a href="{% url 'course' pk=course.pk %}">{{ course }}</a>
+                {% if not forloop.last %}
+                    ,
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div>
+        Преподаватель: <a href="">{{ task.teacher_subjects.all.0.teacher }}</a>
+    </div>
+    <div class="mb-3">
+        <div>До: {{ task.end_date }}</div>
+        {% if mark %}
+        <div>Полученно баллов:<span class="d-inline-block p-2 ml-1 rgba-green-strong text-white rounded pt10">{{ mark.points }}</span></div>
+        {% endif %}
+    </div>
 </div>
-<div>
-    Преподаватель: <a href="">{{ task.teacher_subjects.all.0.teacher }}</a>
-</div>
-<div class="mb-3">
-    До: {{ task.end_date }}
-</div>
+
 {% if task.text %}
-    <p>{{ task.text }}</p>
+    <p class="grey lighten-4 p-2 rounded">{{ task.text }}</p>
 {% else %}
     <p class="text-muted">Нет текста</p>
 {% endif %}
+
 {% if files %}
     {% for file in files %}
         <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
@@ -63,6 +71,7 @@
         </a>
     {% endfor %}
 {% endif %}
+
 {% if completed_task %}
     <div class="pb-4 pr-4 pl-4 pt-3 rounded rgba-green-strong z-depth-1 mt-3">
         <div class="col-12 mb-3 pl-0 pr-0 pt-2 text-white h5 font-weight-normal">
@@ -106,9 +115,6 @@
     <button type="button" class="btn btn-primary waves-effect m-0 btn-block col-12 col-md-2" data-toggle="modal" data-target="#editTask">Изменить</button>
     <button type="button" class="btn btn-danger btn-sm btn-block col-12 col-md-2 ml-md-2 mt-2 mt-md-0 btn-blue-grey" data-toggle="modal" data-target="#delTask">Удалить</button>
     </div>
-    {% endif %}
-    </div>
-    {% if form %}
     <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" id="editTask" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
         <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -161,6 +167,7 @@
         </div>
     </div>
     {% endif %}
+    </div>
 {% elif user.is_student and form %}
     <hr>
     <h6 class="font-weight-normal mb-3 text-muted">Задание не сдано</h6>
@@ -183,6 +190,7 @@
     </div>
     </form>
 {% endif %}
+
 {% if user.is_teacher and completed_tasks_marks %}
 <hr>
 <table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
@@ -227,9 +235,11 @@
 </tbody>
 </table>
 {% endif %}
+
 {% endblock %}
 
 {% block rt-block %}
+
 {% if user.is_teacher and form%}
 <button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target="#addMark">Поставить оценку</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" id="addMark" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
@@ -283,6 +293,7 @@
     </div>
 </div>
 {% endif %}
+
 <script type="text/javascript">
 // Material Select Initialization
 $(document).ready(function() {

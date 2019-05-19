@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="99c2a4b9-edd6-4e50-8078-56ad7613dc5f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/app/static/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/completed_task_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/completed_task_page.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/task_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/task_page.html" afterDir="false" />
@@ -27,83 +26,64 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="866">
-              <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
+            <state relative-caret-position="275">
+              <caret line="297" selection-start-line="297" selection-end-line="297" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
-                <element signature="e#870#2647#0" />
-                <element signature="e#2742#3083#0" />
-                <element signature="e#3181#3448#0" />
-                <element signature="e#3541#3793#0" />
-                <element signature="e#3884#4114#0" />
-                <element signature="e#4214#4580#0" />
-                <element signature="e#4680#5051#0" />
-                <element signature="e#5088#5560#0" />
-                <element signature="e#5654#5915#0" />
-                <element signature="e#5972#8090#0" />
-                <element signature="e#8145#12286#0" />
-                <element signature="e#10834#11841#0" />
-                <element signature="e#12345#13312#0" />
-                <element signature="e#13376#14324#0" />
-                <element signature="e#14359#14531#0" />
-                <element signature="e#14587#15275#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="713">
-              <caret line="203" column="23" lean-forward="true" selection-start-line="203" selection-start-column="23" selection-end-line="203" selection-end-column="23" />
-              <folding>
-                <element signature="e#0#29#0" expanded="true" />
-                <element signature="e#309#683#0" />
-                <element signature="e#704#881#0" />
-                <element signature="e#889#980#0" />
-                <element signature="e#1031#1232#0" />
-                <element signature="e#1270#1584#0" />
-                <element signature="e#1618#2205#0" />
-                <element signature="e#2241#2875#0" />
-                <element signature="e#2911#3302#0" />
-                <element signature="e#3338#3636#0" />
-                <element signature="e#3679#4832#0" />
-                <element signature="e#4882#5088#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/templates/task_page.html">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="106" column="167" selection-start-line="106" selection-start-column="167" selection-end-line="106" selection-end-column="167" />
-              <folding>
-                <element signature="e#1030#1044#0#DjangoTemplate" />
-                <element signature="e#2427#3436#0#HTML" />
-                <element signature="e#5051#5077#0#HTML" expanded="true" />
-                <element signature="e#4910#6713#0#HTML" />
-                <element signature="e#5874#5900#0#HTML" expanded="true" />
-                <element signature="e#6421#6471#0#DjangoTemplate" />
-                <element signature="e#7966#7998#0#DjangoTemplate" />
-                <element signature="e#8367#9767#0#HTML" />
-                <element signature="e#11124#11150#0#HTML" expanded="true" />
-                <element signature="e#10009#10845#0#HTML" />
+                <element signature="e#882#2659#0" />
+                <element signature="e#2754#3095#0" />
+                <element signature="e#3193#3460#0" />
+                <element signature="e#3553#3805#0" />
+                <element signature="e#3896#4126#0" />
+                <element signature="e#4226#4592#0" />
+                <element signature="e#4692#5063#0" />
+                <element signature="e#5100#5572#0" />
+                <element signature="e#5666#5927#0" />
+                <element signature="e#5984#8102#0" />
+                <element signature="e#8301#8850#0" />
+                <element signature="e#8906#11272#0" />
+                <element signature="e#12631#12904#0" />
+                <element signature="e#13081#14048#0" />
+                <element signature="e#14112#15060#0" />
+                <element signature="e#15095#15267#0" />
+                <element signature="e#15323#16011#0" />
+                <element signature="e#16075#17781#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/untitled/urls.py">
+        <entry file="file://$PROJECT_DIR$/app/templates/task_page.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="24" column="51" lean-forward="true" selection-start-line="24" selection-start-column="51" selection-end-line="24" selection-end-column="51" />
+            <state relative-caret-position="34">
+              <caret line="2" selection-start-line="2" selection-end-line="2" />
               <folding>
-                <element signature="e#0#32#0" expanded="true" />
+                <element signature="e#1074#1224#0#HTML" />
+                <element signature="e#1836#1924#0#HTML" />
+                <element signature="e#1925#2132#0#HTML" />
+                <element signature="e#920#938#0#DjangoTemplate" />
+                <element signature="e#1030#1044#0#DjangoTemplate" />
+                <element signature="e#1081#1789#0#HTML" />
+                <element signature="e#1819#1842#0#DjangoTemplate" />
+                <element signature="e#1930#2297#0#HTML" />
+                <element signature="e#2039#2081#0#DjangoTemplate" />
+                <element signature="e#2427#3436#0#HTML" />
+                <element signature="e#3916#5728#0#HTML" />
+                <element signature="e#5733#6701#0#HTML" />
+                <element signature="e#7644#7694#0#DjangoTemplate" />
+                <element signature="e#9189#9221#0#DjangoTemplate" />
+                <element signature="e#11907#12278#0#HTML" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/completed_task_page.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="8" lean-forward="true" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="131" />
             </state>
           </provider>
         </entry>
@@ -178,13 +158,13 @@
         <option value="$PROJECT_DIR$/app/templates/course_page.html" />
         <option value="$PROJECT_DIR$/app/templates/task_edit.html" />
         <option value="$PROJECT_DIR$/app/forms.py" />
-        <option value="$PROJECT_DIR$/app/templates/completed_task_page.html" />
-        <option value="$PROJECT_DIR$/app/static/css/style.css" />
         <option value="$PROJECT_DIR$/app/templates/task_del.html" />
-        <option value="$PROJECT_DIR$/app/templates/task_page.html" />
         <option value="$PROJECT_DIR$/app/models.py" />
-        <option value="$PROJECT_DIR$/app/view.py" />
         <option value="$PROJECT_DIR$/untitled/urls.py" />
+        <option value="$PROJECT_DIR$/app/static/css/style.css" />
+        <option value="$PROJECT_DIR$/app/templates/completed_task_page.html" />
+        <option value="$PROJECT_DIR$/app/view.py" />
+        <option value="$PROJECT_DIR$/app/templates/task_page.html" />
       </list>
     </option>
   </component>
@@ -390,11 +370,13 @@
       <workItem from="1558179662907" duration="15867000" />
       <workItem from="1558199423086" duration="2524000" />
       <workItem from="1558202944739" duration="7728000" />
+      <workItem from="1558210850802" duration="365000" />
+      <workItem from="1558257588042" duration="4016000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="313674000" />
+    <option name="totallyTimeSpent" value="318055000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -408,7 +390,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="2062" height="1126" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" x="900" y="48" width="248" height="1016" id="Project" order="0" sideWeight="0.49901575" visible="true" weight="0.13886113" />
+      <window_info active="true" content_ui="combo" x="900" y="48" width="248" height="1016" id="Project" order="0" sideWeight="0.49901575" visible="true" weight="0.14185815" />
       <window_info id="Structure" order="1" sideWeight="0.50098425" side_tool="true" weight="0.12287712" />
       <window_info id="Favorites" order="2" sideWeight="0.50098425" side_tool="true" weight="0.12287712" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -467,13 +449,6 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="django-line">
-          <url>file://$PROJECT_DIR$/app/templates/task_page.html</url>
-          <line>2</line>
-          <option name="timeStamp" value="30" />
-        </line-breakpoint>
-      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
@@ -688,13 +663,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/detail.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-222">
-          <caret line="106" selection-start-line="106" selection-end-line="106" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -802,6 +770,7 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/task_del.html" />
     <entry file="file://$PROJECT_DIR$/app/templates/layout_simple.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
@@ -812,54 +781,21 @@
     <entry file="file://$PROJECT_DIR$/app/templates/layout.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
-          <caret line="12" column="67" lean-forward="true" selection-start-line="12" selection-start-column="67" selection-end-line="12" selection-end-column="67" />
+          <caret line="12" column="68" selection-start-line="12" selection-start-column="68" selection-end-line="12" selection-end-column="68" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/static/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="164" column="30" selection-start-line="164" selection-start-column="30" selection-end-line="164" selection-end-column="30" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/completed_task_page.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="838">
-          <caret line="81" column="47" selection-start-line="81" selection-start-column="47" selection-end-line="81" selection-end-column="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/task_del.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="6" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/task_page.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="106" column="167" selection-start-line="106" selection-start-column="167" selection-end-line="106" selection-end-column="167" />
-          <folding>
-            <element signature="e#1030#1044#0#DjangoTemplate" />
-            <element signature="e#2427#3436#0#HTML" />
-            <element signature="e#5051#5077#0#HTML" expanded="true" />
-            <element signature="e#4910#6713#0#HTML" />
-            <element signature="e#5874#5900#0#HTML" expanded="true" />
-            <element signature="e#6421#6471#0#DjangoTemplate" />
-            <element signature="e#7966#7998#0#DjangoTemplate" />
-            <element signature="e#8367#9767#0#HTML" />
-            <element signature="e#11124#11150#0#HTML" expanded="true" />
-            <element signature="e#10009#10845#0#HTML" />
-          </folding>
+        <state relative-caret-position="173">
+          <caret line="138" column="14" selection-start-line="138" selection-start-column="14" selection-end-line="138" selection-end-column="14" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="713">
-          <caret line="203" column="23" lean-forward="true" selection-start-line="203" selection-start-column="23" selection-end-line="203" selection-end-column="23" />
+        <state relative-caret-position="934">
+          <caret line="203" column="23" selection-start-line="203" selection-start-column="23" selection-end-line="203" selection-end-column="23" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
             <element signature="e#309#683#0" />
@@ -877,38 +813,78 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/view.py">
+    <entry file="file://$PROJECT_DIR$/untitled/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="866">
-          <caret line="445" lean-forward="true" selection-start-line="445" selection-end-line="445" />
+        <state relative-caret-position="493">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
           <folding>
-            <element signature="e#0#29#0" expanded="true" />
-            <element signature="e#870#2647#0" />
-            <element signature="e#2742#3083#0" />
-            <element signature="e#3181#3448#0" />
-            <element signature="e#3541#3793#0" />
-            <element signature="e#3884#4114#0" />
-            <element signature="e#4214#4580#0" />
-            <element signature="e#4680#5051#0" />
-            <element signature="e#5088#5560#0" />
-            <element signature="e#5654#5915#0" />
-            <element signature="e#5972#8090#0" />
-            <element signature="e#8145#12286#0" />
-            <element signature="e#10834#11841#0" />
-            <element signature="e#12345#13312#0" />
-            <element signature="e#13376#14324#0" />
-            <element signature="e#14359#14531#0" />
-            <element signature="e#14587#15275#0" />
+            <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/untitled/urls.py">
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/detail.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="51" lean-forward="true" selection-start-line="24" selection-start-column="51" selection-end-line="24" selection-end-column="51" />
+        <state relative-caret-position="17">
+          <caret line="106" selection-start-line="106" selection-end-line="106" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/completed_task_page.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="8" lean-forward="true" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="131" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="275">
+          <caret line="297" selection-start-line="297" selection-end-line="297" />
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#0#29#0" expanded="true" />
+            <element signature="e#882#2659#0" />
+            <element signature="e#2754#3095#0" />
+            <element signature="e#3193#3460#0" />
+            <element signature="e#3553#3805#0" />
+            <element signature="e#3896#4126#0" />
+            <element signature="e#4226#4592#0" />
+            <element signature="e#4692#5063#0" />
+            <element signature="e#5100#5572#0" />
+            <element signature="e#5666#5927#0" />
+            <element signature="e#5984#8102#0" />
+            <element signature="e#8301#8850#0" />
+            <element signature="e#8906#11272#0" />
+            <element signature="e#12631#12904#0" />
+            <element signature="e#13081#14048#0" />
+            <element signature="e#14112#15060#0" />
+            <element signature="e#15095#15267#0" />
+            <element signature="e#15323#16011#0" />
+            <element signature="e#16075#17781#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/task_page.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+          <folding>
+            <element signature="e#1074#1224#0#HTML" />
+            <element signature="e#1836#1924#0#HTML" />
+            <element signature="e#1925#2132#0#HTML" />
+            <element signature="e#920#938#0#DjangoTemplate" />
+            <element signature="e#1030#1044#0#DjangoTemplate" />
+            <element signature="e#1081#1789#0#HTML" />
+            <element signature="e#1819#1842#0#DjangoTemplate" />
+            <element signature="e#1930#2297#0#HTML" />
+            <element signature="e#2039#2081#0#DjangoTemplate" />
+            <element signature="e#2427#3436#0#HTML" />
+            <element signature="e#3916#5728#0#HTML" />
+            <element signature="e#5733#6701#0#HTML" />
+            <element signature="e#7644#7694#0#DjangoTemplate" />
+            <element signature="e#9189#9221#0#DjangoTemplate" />
+            <element signature="e#11907#12278#0#HTML" />
           </folding>
         </state>
       </provider>
