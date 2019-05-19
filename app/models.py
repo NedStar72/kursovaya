@@ -128,7 +128,7 @@ class TeacherSubject(models.Model):
     class Meta:
         verbose_name = _(u'Преподаваемый предмет')
         verbose_name_plural = _(u'Преподаваемые предметы')
-        ordering = ['subject__name', 'teacher', 'day_of_week']
+        ordering = ['day_of_week', 'time', 'subject__name', 'teacher']
         db_table = 'Teacher_Subject'
 
     def get_day(self):
