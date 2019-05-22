@@ -107,7 +107,7 @@ class Teacher(models.Model):
         db_table = 'Teachers'
 
     def __str__(self):
-        return self.user.last_name.__str__() + ' ' + self.user.first_name.__str__()
+        return self.user.last_name.__str__() + ' ' + self.user.first_name.__str__() + ' ' + self.user.patronymic.__str__()
 
 
 class Subject(models.Model):
@@ -180,6 +180,9 @@ class Task(models.Model):
 
     def get_teacher(self):
         return self.teacher_subjects.first().teacher
+
+    def get_course(self, student):
+        return self.teacher_subjects.intersection(student.teacher_subjects.all())
 
     def __str__(self):
         return self.name.__str__()

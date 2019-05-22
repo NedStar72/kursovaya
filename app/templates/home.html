@@ -107,8 +107,19 @@
         </div>
 
     </div>
-    <div class="col-12">
-        123
+    <div class="col-12 mt-4">
+        <h4 class="mb-3 font-weight-normal">Курсы</h4>
+        <div class="card-columns">
+            {% for course in courses %}
+            <a class="card mb-3 z-depth-1 border" style="max-width: 18rem;" href="{% url 'course' pk=course.pk %}">
+                <div class="card-header text-body">{{ course.get_day }}, {{ course.time }}</div>
+                <div class="card-body text-body">
+                    <h5 class="card-title">{{ course }}</h5>
+                    <p class="card-text">{{ course.teacher }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
     </div>
 </div>
 {% elif user.is_teacher %}

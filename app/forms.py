@@ -190,7 +190,8 @@ class CourseAddForm(forms.ModelForm):
                                          'class': 'mdb-select',
                                          'searchable': 'Пойск',
                                      }))
-    students = forms.MultipleChoiceField(choices=[(x.user.pk, x.user.last_name + ' ' + x.user.first_name) for x in models.Student.objects.all()],
+    students = forms.MultipleChoiceField(choices=[(x.user.pk, x.user.last_name + ' ' + x.user.first_name + ' '
+                                                   + x.user.patronymic) for x in models.Student.objects.all()],
                                          label='Студенты',
                                          required=True,
                                          widget=forms.SelectMultiple(attrs={
@@ -210,9 +211,10 @@ class CourseAddForm(forms.ModelForm):
                                                       day_of_week=self.cleaned_data.get('day_of_week'),
                                                       time=datetime.datetime.strptime(self.cleaned_data.get('time'),
                                                                                       '%H:%M').time())
-        students = [student_t[0] for student_t in self.cleaned_data.get('students')]
-        students = models.Student.objects.filter(user_id__in=students)
-        course.students.add(*students)
+        students = models.Student.objects.filter(user_id__in=self.cleaned_data.get('students'))
+        models.StudentTeacherSubject.objects.bulk_create(
+            [models.StudentTeacherSubject(student=s, teacher_subject=course) for s in students]
+        )
         return course
 
 

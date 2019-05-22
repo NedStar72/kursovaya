@@ -56,7 +56,7 @@ class HomeView(LoginRequiredMixin, CreateView):
             context['form'] = forms.TaskAddForm(teacher=teacher)
         if self.request.user.is_student:
             student = self.request.user.student
-            courses = student.teacher_subjects.all()
+            context['courses'] = courses = student.teacher_subjects.all()
             student_tasks = models.Task.objects.filter(teacher_subjects__in=courses,
                                                        end_date__gte=datetime.now().date()).order_by('end_date').distinct()[:3]
             temp = []
@@ -367,7 +367,7 @@ class TaskView(LoginRequiredMixin, DetailView):
                     context['form'] = forms.CompletedTaskAddForm(student=student, instance=context['completed_task'])
                 else:
                     context['form'] = None
-            students_courses = student.teacher_subjects.all()
+            students_courses = task.get_course(student=student)
             context['student_course'] = courses.union(students_courses)
         if self.request.user.is_teacher:
             completed_tasks = list(task.completed_tasks.all())
@@ -412,7 +412,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     template_name = 'task_list.html'
     model = models.Task
     context_object_name = 'tasks'
-    paginate_by = 5
+    paginate_by = 2
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_teacher:

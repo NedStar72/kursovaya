@@ -42,14 +42,14 @@
 </div>
 
 {% if task.text %}
-    <p class="grey lighten-4 p-2 rounded">{{ task.text }}</p>
+    <div class="grey lighten-4 pt-3 pb-1 pr-3 pl-3 rounded mb-4">{{ task.text|linebreaks }}</div>
 {% else %}
-    <p class="text-muted">Нет текста</p>
+    <div class="text-muted">Нет текста</div>
 {% endif %}
 
 {% if files %}
     {% for file in files %}
-        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+        <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-2 mr-2">
             <i class="fas
             {% if file.css_class == 'word'%}
             fa-file-word
@@ -87,7 +87,7 @@
         <div class="col-12 pl-0 mb-3">
             <div class="mb-2 d-inline-block mr-2 text-white">Отправленные файлы:</div>
             {% for file in completed_task_files %}
-                <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-0 mr-2">
+                <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-2 mr-2">
                 <i class="fas
                 {% if file.css_class == 'word'%}
                 fa-file-word
@@ -266,7 +266,7 @@
                 </div>
             </div>
             <div class="d-flex flex-wrap justify-content-between mt-3 mt-md-0">
-                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Выставить</button>
+                <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-4 mt-2 mt-lg-0 mb-1">Поставить</button>
             </div>
         </form>
         </div>
