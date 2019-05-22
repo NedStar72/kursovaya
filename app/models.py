@@ -7,10 +7,15 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import AbstractUser
 
 
+def user_avatar_path(instance, filename):
+    return 'user_{0}/{1}'.format(instance.id, filename)
+
+
 class User(AbstractUser):
     patronymic = models.CharField(max_length=63, blank=True, verbose_name='Отчество')
     is_student = models.BooleanField(default=False, verbose_name='Студент')
     is_teacher = models.BooleanField(default=False, verbose_name='Преподаватель')
+    #avatar = models.ImageField(upload_to=user_avatar_path)
     # добавить другие поля для инфы?
 
     def __str__(self):
@@ -82,6 +87,9 @@ class Student(models.Model):
         ordering = ['user__last_name']
         default_related_name = 'students'
         db_table = 'Students'
+
+    def get_marks(self):
+        return Mark.objects.filter(student_teacher_subject__in=StudentTeacherSubject.objects.filter(student=self))
 
     def __str__(self):
         return self.user.last_name.__str__() + ' ' + self.user.first_name.__str__() + ' (' + self.group.name + ')'
@@ -167,6 +175,9 @@ class Task(models.Model):
         for file in files:
             file.delete()
         super(Task, self).delete(using, keep_parents)
+
+    def get_teacher(self):
+        return self.teacher_subjects.first().teacher
 
     def __str__(self):
         return self.name.__str__()

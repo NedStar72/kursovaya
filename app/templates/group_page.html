@@ -2,23 +2,23 @@
 
 {% block lb-block %}
 <table class="table table-sm table-borderless table-striped mb-0 table-responsive-md" id="stable">
-<caption>Список студентов</caption>
+<caption>Список заданий</caption>
 <thead>
-    <tr class="d-flex">
+    <tr class="d-flex col-12 p-0">
     <th class="th-sm col-1 pr-1 pl-3">#</th>
     <th class="th-sm col-4 pr-1 pl-3">Фамилия</th>
     <th class="th-sm col-3 pr-1 pl-3">Имя</th>
-    <th class="th-sm col-4 pr-1 pl-3">Отчество</th>
+    <th class="th-sm col-2 pl-3">Отчество</th>
     </tr>
 </thead>
 <tbody>
 {% for student in students %}
 <div>
-<tr class="d-flex">
+<tr class="d-flex col-12 p-0">
     <td class="col-1 pr-1">{{ forloop.counter }}</td>
     <td class="col-4 pr-1"><a href="">{{ student.user.last_name }}</a></td>
     <td class="col-3 pr-1">{{ student.user.first_name }}</td>
-    <td class="col-4 pr-1">{{ student.user.patronymic }}</td>
+    <td class="col-2">{{ student.user.patronymic }}</td>
 </tr>
 </div>
 {% empty %}
@@ -29,6 +29,7 @@
 <script>
 $(document).ready(function () {
 $('#stable').DataTable({
+"autoWidth": false,
 "searching": false,
 "paging": false,
 "info": false,

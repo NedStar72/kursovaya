@@ -58,6 +58,7 @@ $('.mdb-select').materialSelect();
 
 {% block rt-block %}
 {% if user.is_teacher %}
+<div class="pb-3 pb-lg-0">
 <button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Поставить оценку</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog">
@@ -82,6 +83,7 @@ $('.mdb-select').materialSelect();
         </div>
     </div>
     </div>
+</div>
 </div>
 {% elif user.is_student %}
 <form method="post" enctype="multipart/form-data">

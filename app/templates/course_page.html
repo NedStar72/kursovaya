@@ -13,8 +13,8 @@
 <thead>
     <tr class="d-flex">
     <th class="th-sm col-1 pr-1 pl-3">#</th>
-    <th class="th-sm col-9 pr-1">Название</th>
-    <th class="th-sm col-2 pr-1 pl-3">До</th>
+    <th class="th-sm col-8 col-md-9 pr-1">Название</th>
+    <th class="th-sm col-3 col-md-2 pr-1 pl-3">До</th>
     </tr>
 </thead>
 <tbody>
@@ -22,8 +22,8 @@
 <div>
 <tr class="d-flex">
     <td class="col-1 pr-1">{{ forloop.counter }}</td>
-    <td class="col-9 pr-1"><a href="{% url 'task' pk=task.pk %}">{{ task.name }}</a></td>
-    <td class="col-2 pr-1">{{ task.end_date }}</td>
+    <td class="col-8 col-md-9  pr-1"><a href="{% url 'task' pk=task.pk %}">{{ task.name }}</a></td>
+    <td class="col-3 col-md-2 pr-1">{{ task.end_date|date:'d.m.Y' }}</td>
 </tr>
 </div>
 {% endfor %}
@@ -75,10 +75,10 @@ $('#ttable').DataTable({
 "searching": false,
 "paging": false,
 "info": false,
-columnDefs: [{
-orderable: false,
-targets: 1
-}]
+columnDefs: [
+    { type: "date-eu", targets: 2 },
+    { orderable: false, targets: 1 },
+]
 });
 $('.dataTables_length').addClass('bs-select');
 $('.mdb-select').materialSelect();
@@ -88,7 +88,7 @@ $('.mdb-select').materialSelect();
 
 {% block rt-block %}
 {% if user.is_teacher %}
-<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Дополнительные баллы</button>
+<button type="button" class="btn btn-primary btn-block mb-2" data-toggle="modal" data-target=".bd-example-modal-xl">Дополнительные баллы</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -120,4 +120,7 @@ $('.mdb-select').materialSelect();
     </div>
 </div>
 {% endif %}
+<div class="pb-3 pb-lg-0">
+<a class="btn btn-primary btn-block" href="{% url 'course_sheet' pk=course.pk %}">Ведомость</a>
+</div>
 {% endblock %}

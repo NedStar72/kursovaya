@@ -75,7 +75,7 @@
 {% if completed_task %}
     <div class="pb-4 pr-4 pl-4 pt-3 rounded rgba-green-strong z-depth-1 mt-3">
         <div class="col-12 mb-3 pl-0 pr-0 pt-2 text-white h5 font-weight-normal">
-            Отправелно
+            Отправлено
             {% with completed_task.get_mark as mark %}
                 {% if mark %}
                     <div class="d-inline-block float-right h6 p-2 rgba-green-strong rounded">{{ mark.points }}</div>
@@ -221,9 +221,9 @@
     </td>
     <td class="col-3 pr-1">
         {% if mark %}
-            {{ mark.date }}
+            {{ mark.date|date:'d.m.Y' }}
         {% else %}
-            {{ c_task.date }}
+            {{ c_task.date|date:'d.m.Y' }}
         {% endif %}
     </td>
     <td class="col-2 pr-1">{{ mark.points|default:"-" }}</td>
@@ -241,6 +241,7 @@
 {% block rt-block %}
 
 {% if user.is_teacher and form%}
+<div class="pb-3 pb-lg-0">
 <button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target="#addMark">Поставить оценку</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" id="addMark" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog">
@@ -292,6 +293,7 @@
     </div>
     </div>
 </div>
+</div>
 {% endif %}
 
 <script type="text/javascript">
@@ -304,9 +306,10 @@ $('#stable').DataTable({
 "searching": false,
 "paging": false,
 "info": false,
-columnDefs: [{
-orderable: false
-}]
+columnDefs: [
+    {orderable: false},
+    {type: "date-eu", targets: 3}
+]
 });
 {% endif %}
 });

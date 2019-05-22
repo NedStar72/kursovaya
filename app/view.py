@@ -10,9 +10,14 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login
 from django.urls import reverse
 
+from django.core.paginator import Paginator
+from django.core.paginator import EmptyPage
+from django.core.paginator import PageNotAnInteger
+
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm
@@ -63,6 +68,21 @@ class HomeView(LoginRequiredMixin, CreateView):
             context['student_tasks'] = temp
         context['title'] = 'Главная страница'
         context['year'] = datetime.now().year
+        return context
+
+
+class SheetView(LoginRequiredMixin, TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_student:
+            return super(SheetView, self).get(request, *args, **kwargs)
+        return redirect('/')
+
+    def get_context_data(self, **kwargs):
+        context = super(SheetView, self).get_context_data(**kwargs)
+        student = self.request.user.student
+        courses = student.teacher_subjects.all()
+
         return context
 
 
@@ -202,7 +222,7 @@ class CourseView(LoginRequiredMixin, DetailView):
         context = super(CourseView, self).get_context_data(**kwargs)
         course = context['course']
         context['title'] = "Курс: " + course.subject.name
-        context['tasks'] = course.tasks.all()
+        context['tasks'] = course.tasks.all().order_by('-start_date')
         s_t_s = models.StudentTeacherSubject.objects.filter(student__in=course.students.all(),
                                                             teacher_subject=course)
         s_marks = [[x.student, x.marks.all()] for x in s_t_s]
@@ -214,6 +234,45 @@ class CourseView(LoginRequiredMixin, DetailView):
         context['students_marks'] = s_marks
         if self.request.user.is_teacher:
             context['form'] = forms.MarkAddForm(course=course)
+        return context
+
+
+class SheetView(LoginRequiredMixin, DetailView):
+    model = models.TeacherSubject
+    template_name = 'course_sheet.html'
+    context_object_name = 'course'
+
+    def get(self, request, *args, **kwargs):
+        course = self.get_object()
+        if (self.request.user.is_student and course in request.user.student.teacher_subjects.all()) or \
+                (self.request.user.is_teacher and request.user == course.teacher.user) or request.user.is_superuser:
+            return super(SheetView, self).get(request, *args, **kwargs)
+        return redirect('/')
+
+    def get_context_data(self, **kwargs):
+        context = super(SheetView, self).get_context_data(**kwargs)
+        course = context['course']
+        context['title'] = "Ведомость: " + course.subject.name
+        context['tasks'] = tasks = course.tasks.all()
+        students = course.students.all()
+        s_ms = []
+        for student in students:
+            s_marks = []
+            for task in tasks:
+                mark = models.Mark.objects.filter(task=task,
+                                                  student_teacher_subject__in=models.StudentTeacherSubject.objects.filter(
+                                                      student=student
+                                                  )).first()
+                s_marks += [mark]
+            s_marks += [models.Mark.objects.filter(
+                student_teacher_subject=models.StudentTeacherSubject.objects.get(
+                    student=student, teacher_subject=course
+                ),
+                task__isnull=True
+            ).first()]
+            s_marks += [sum([0 if (m is None) else m.points for m in s_marks])]
+            s_ms += [(student, s_marks)]
+        context['s_ms'] = s_ms
         return context
 
 
@@ -349,6 +408,47 @@ class TaskEditView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(TaskEditView, self).get_context_data(**kwargs)
         context['title'] = 'Редактировать задание'
+        return context
+
+
+class TaskListView(LoginRequiredMixin, ListView):
+    template_name = 'task_list.html'
+    model = models.Task
+    context_object_name = 'tasks'
+    paginate_by = 5
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_teacher:
+            return redirect('/')
+        return super(TaskListView, self).get(request, *args, **kwargs)
+
+    @staticmethod
+    def page(page=1):
+        return redirect('task_list', page=page)
+
+    def get_queryset(self):
+        tasks = models.Task.objects.filter(
+            teacher_subjects__in=self.request.user.student.teacher_subjects.all()
+        )
+        if self.kwargs.get('type', '') == 'debts':
+            return tasks.filter(end_date__lt=datetime.now().date()).exclude(marks__in=
+                                                                            self.request.user.student.get_marks()).order_by('-end_date')
+        if self.kwargs.get('type', '') == 'all':
+            return tasks.order_by('start_date')
+        return tasks.filter(end_date__gte=datetime.now().date())
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(TaskListView, self).get_context_data(object_list=object_list, **kwargs)
+        if self.kwargs.get('type', '') == 'debts':
+            context['title'] = 'Список задолжностей'
+        elif self.kwargs.get('type', '') == 'all':
+            context['title'] = 'Список всех заданий'
+        else:
+            context['title'] = 'Список заданий'
+        try:
+            context['type'] = self.kwargs['type']
+        except:
+            pass
         return context
 
 

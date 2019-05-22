@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>{{ title }}</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/mdb.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/all.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/addons/datatables.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body class="grey lighten-5 h-100 d-flex">
+<script type="text/javascript" src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/addons/datatables.min.js' %}"></script>
+<div class="w-98 p-2">
+<h2 class="font-weight-normal mb-3 text-left">{{ title }}</h2>
+<div>Курс: <a href="{% url 'course' pk=course.pk %}">{{ course }}</a></div>
+<div class="mb-4">Преподаватель: <a href="">{{ course.teacher }}</a></div>
+<table id="stable" class="table table-sm table-striped table-borderless table-responsive-md">
+    <thead>
+        <tr>
+            <th class="pl-3 pr-2 pt-0">#</th>
+            <th class="pl-3 pr-0 pt-0">Студент</th>
+            {% for task in tasks %}
+            <th class="pl-3 pr-2 pt-0">{{ task.name }}</th>
+            {% endfor %}
+            <th class="pl-3 pr-2 pt-0">Доп. баллы</th>
+            <th class="pl-3 pr-2 pt-0">Сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s_m in s_ms %}
+        <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <th scope="row"><a href="">{{ s_m.0 }}</a></th>
+        {% for m in s_m.1 %}
+            <td class="text-center">
+                {% if m and m.get_completed_task %}
+                    <a href="{% url 'completed_task' pk=m.get_completed_task.pk %}">{{ m.points }}</a>
+                {% elif m.points %}
+                    {{ m.points|default:'-' }}
+                {% else %}
+                    {{ m|default:'-' }}
+                {% endif %}
+            </td>
+        {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+$(document).ready(function () {
+$('.table').DataTable({
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false,
+}]
+});
+$('.dataTables_length').addClass('bs-select');
+});
+</script>
+</div>
+</body>
+</html>
