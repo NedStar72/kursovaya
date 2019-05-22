@@ -67,7 +67,6 @@ class HomeView(LoginRequiredMixin, CreateView):
                         break
             context['student_tasks'] = temp
         context['title'] = 'Главная страница'
-        context['year'] = datetime.now().year
         return context
 
 
@@ -128,7 +127,6 @@ class RegisterView(LoginRequiredMixin, views.SuperuserRequiredMixin, TemplateVie
 
     def get_context_data(self, **kwargs):
         kwargs['title'] = 'Регистрация'
-        kwargs['year'] = datetime.now().year
         return super(RegisterView, self).get_context_data()
 
 
@@ -169,7 +167,6 @@ class MyLoginView(LoginView):
     def get_context_data(self, **kwargs):
         context = super(MyLoginView, self).get_context_data()
         context['title'] = 'Страница входа'
-        context['year'] = datetime.now().year
         return context
 
     def form_valid(self, form):

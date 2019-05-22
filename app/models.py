@@ -5,6 +5,7 @@ from django.db.models.signals import post_delete
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import AbstractUser
+from PIL import Image
 
 
 def user_avatar_path(instance, filename):
@@ -15,7 +16,8 @@ class User(AbstractUser):
     patronymic = models.CharField(max_length=63, blank=True, verbose_name='Отчество')
     is_student = models.BooleanField(default=False, verbose_name='Студент')
     is_teacher = models.BooleanField(default=False, verbose_name='Преподаватель')
-    #avatar = models.ImageField(upload_to=user_avatar_path)
+    avatar = models.ImageField(upload_to=user_avatar_path, null=True, default='/default-avatar.png',
+                               verbose_name='Аватар')
     # добавить другие поля для инфы?
 
     def __str__(self):

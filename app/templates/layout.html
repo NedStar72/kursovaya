@@ -62,7 +62,7 @@
     <div class="position-absolute ava dropdown pr-3 d-none d-md-block">
         <a class="ava navbar-light text-decoration-none dropdown-toggle text-body" id="avaLink" href="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {{ user.last_name }} {{ user.first_name }}
-            <img class="ava" src="https://pbs.twimg.com/profile_images/885521274608504832/l1YjvWoq_400x400.jpg" alt="ava">
+            <img class="ava" src="{{ user.avatar.url }}" alt="ava">
         </a>
         <div class="dropdown-menu" aria-labelledby="avaLink">
             <a class="dropdown-item" href="#">Мой профиль</a>
@@ -89,7 +89,7 @@
 </div>
 <footer class="container mt-3">
     <div class="border-top p-2">
-        Мобильный семестр &copy; {{ year }} / Днище
+        Мобильный семестр &copy; {% now 'Y' %} / Днище
     </div>
 </footer>
 </body>
