@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+{{ form.errors }}
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<div class="form-group">
+    {{ form.patronymic.label_tag }}
+    {{ form.patronymic }}
+</div>
+<div class="form-group">
+    {{ form.email.label_tag }}
+    {{ form.email }}
+</div>
+<div class="file-field mt-4">
+    <div class="col-12 col-md-auto position-static mb-3 mb-md-0 btn btn-primary btn-sm float-left">
+        <span>Выберите картинку</span>
+        {{ form.avatar }}
+    </div>
+    <div class="file-path-wrapper d-none d-md-block">
+        <input class="file-path validate" type="text" placeholder="Загрузите новый аватар">
+    </div>
+</div>
+<button type="submit" class="btn btn-sm btn-primary btn-block mt-4">Сохранить</button>
+</form>
+{% endblock %}
+{% block rt-block %}
+<div class="mb-3 avatar_container">
+    <img class="rounded-circle border" src="{{ user.avatar.url }}" alt="ava">
+</div>
+<a href="{% url 'password' %}" class="btn btn-primary btn-block mb-3">Сменить пароль</a>
+{% endblock %}

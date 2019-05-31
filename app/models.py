@@ -21,7 +21,10 @@ class User(AbstractUser):
     # добавить другие поля для инфы?
 
     def __str__(self):
-        return self.last_name.__str__() + ' ' + self.first_name.__str__()
+        if self.patronymic:
+            return self.last_name.__str__() + ' ' + self.first_name.__str__() + ' ' + self.patronymic.__str__()
+        else:
+            return self.last_name.__str__() + ' ' + self.first_name.__str__()
 
 
 DAY_OF_THE_WEEK = {

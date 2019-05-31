@@ -16,7 +16,7 @@
 <div>
 <tr class="d-flex col-12 p-0">
     <td class="col-1 pr-1">{{ forloop.counter }}</td>
-    <td class="col-4 pr-1"><a href="">{{ student.user.last_name }}</a></td>
+    <td class="col-4 pr-1"><a href="{% url 'user' pk=student.pk %}">{{ student.user.last_name }}</a></td>
     <td class="col-3 pr-1">{{ student.user.first_name }}</td>
     <td class="col-2">{{ student.user.patronymic }}</td>
 </tr>

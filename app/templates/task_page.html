@@ -31,7 +31,9 @@
         {% endif %}
     </div>
     <div>
-        Преподаватель: <a href="">{{ task.teacher_subjects.all.0.teacher }}</a>
+        {% with task.teacher_subjects.all.0.teacher as teacher %}
+        Преподаватель: <a href="{% url 'user' pk=teacher.pk %}">{{ teacher }}</a>
+        {% endwith %}
     </div>
     <div class="mb-3">
         <div>До: {{ task.end_date }}</div>
@@ -84,7 +86,7 @@
         </div>
         <div class="col-12 text-white-75 p-0 mb-3">{{ completed_task.text }}</div>
         {% if completed_task_files %}
-        <div class="col-12 pl-0 mb-3">
+        <div class="col-12 pl-0">
             <div class="mb-2 d-inline-block mr-2 text-white">Отправленные файлы:</div>
             {% for file in completed_task_files %}
                 <a href="{{ file.file.url }}" class="p-2 btn btn-sm btn-primary hoverable mb-2 mr-2">

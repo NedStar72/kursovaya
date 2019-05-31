@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+<div class="span8">
+{% if this_user.is_student %}
+    <h6 class="mb-3">Группа: {% if this_user.student.group %}<a href="{% url 'group' pk=this_user.student.group.pk %}" class="font-weight-normal">{{ this_user.student.group }}</a>{% else %}не найдена{% endif %}</h6>
+    <h6 class="mb-3">Специальность: <span class="font-weight-normal">{{ this_user.student.group.specialty }}</span></h6>
+{% endif %}
+    <h6 class="mb-3">Почта: <span class="font-weight-normal">{{ this_user.email|default:'<span class="text-muted">отсутствует</span>' }}</span></h6>
+</div>
+{% endblock %}
+{% block rt-block %}
+<div class="mb-3 avatar_container">
+    <img class="rounded-circle border" src="{{ this_user.avatar.url }}" alt="ava">
+</div>
+{% if user == this_user %}
+    <a href="{% url 'settings' %}" class="btn btn-primary btn-block mb-3">Настройки</a>
+{% endif %}
+{% endblock %}

@@ -15,12 +15,13 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.views import PasswordChangeView
 
 import app.models as models
 import app.forms as forms
@@ -437,7 +438,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(TaskListView, self).get_context_data(object_list=object_list, **kwargs)
         if self.kwargs.get('type', '') == 'debts':
-            context['title'] = 'Список задолжностей'
+            context['title'] = 'Список задолженностей'
         elif self.kwargs.get('type', '') == 'all':
             context['title'] = 'Список всех заданий'
         else:
@@ -493,14 +494,6 @@ class GroupView(LoginRequiredMixin, DetailView):
     template_name = 'group_page.html'
     context_object_name = 'group'
 
-    def get(self, request, *args, **kwargs):
-        if self.request.user.is_student:
-            group = self.get_object()
-            student = request.user.student
-            if not (student in group.students.all()):
-                return redirect('/')
-        return super(GroupView, self).get(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super(GroupView, self).get_context_data(**kwargs)
         group = context['group']
@@ -545,4 +538,48 @@ class CompletedTaskView(LoginRequiredMixin, DetailView):
         context['form'] = forms.MarkAddForm(task=completed_task.task)
         context['files'] = models.TaskFile.objects.filter(completed_task=completed_task)
         context['title'] = "Ответ: " + completed_task.task.name
+        return context
+
+
+class UserPageView(LoginRequiredMixin, DeleteView):
+    model = models.User
+    template_name = 'user_page.html'
+    context_object_name = 'this_user'
+
+    def get_object(self, queryset=None):
+        try:
+            return super(UserPageView, self).get_object(queryset=queryset)
+        except AttributeError:
+            return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super(UserPageView, self).get_context_data(**kwargs)
+        user = self.get_object()
+        context['title'] = user.__str__()
+        return context
+
+
+class UserSettingsPageView(LoginRequiredMixin, UpdateView):
+    model = models.User
+    form_class = forms.SettingsForm
+    template_name = 'settings.html'
+    success_url = '/user/'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super(UserSettingsPageView, self).get_context_data(**kwargs)
+        context['title'] = 'Настройки'
+        return context
+
+
+class PasswordChangeFormView(PasswordChangeView):
+    form_class = forms.MyPasswordChangeForm
+    template_name = 'change_password.html'
+    success_url = '/user/'
+
+    def get_context_data(self, **kwargs):
+        context = super(PasswordChangeFormView, self).get_context_data(**kwargs)
+        context['title'] = 'Смена пароля'
         return context

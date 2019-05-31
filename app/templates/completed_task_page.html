@@ -2,7 +2,7 @@
 
 {% block lb-block %}
 <div class="d-flex flex-wrap">
-    <div class="col-12 p-0">Отправитель: <a href="">{{ completed_task.student }}</a></div>
+    <div class="col-12 p-0">Отправитель: <a href="{% url 'user' pk=completed_task.student.pk %}">{{ completed_task.student }}</a></div>
     <div class="col-12 p-0 mb-3">Задача: <a href="{% url 'task' pk=completed_task.task.pk %}">{{ completed_task.task }}</a></div>
     <div class="col-12 p-0 mb-3">
         Баллы:

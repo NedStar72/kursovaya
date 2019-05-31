@@ -2,7 +2,7 @@
 
 {% block lb-block %}
 <div>
-    Преподаватель: <a href="">{{ course.teacher }}</a>
+    Преподаватель: <a href="{% url 'user' pk=course.teacher.pk %}">{{ course.teacher }}</a>
 </div>
 <div class="mb-3">
     Время пары: {{ course.get_day }}, {{ course.time }}
@@ -48,7 +48,7 @@
 <div>
 <tr class="d-flex">
     <td class="col-1 pr-1">{{ forloop.counter }}</td>
-    <td class="col-3 pr-1"><a href="">{{ s_m.0.user.last_name }}</a></td>
+    <td class="col-3 pr-1"><a href="{% url 'user' pk=s_m.0.pk %}">{{ s_m.0.user.last_name }}</a></td>
     <td class="col-2 pr-1">{{ s_m.0.user.first_name }}</td>
     <td class="col-2 pr-1">{{ s_m.0.user.patronymic }}</td>
     <td class="col-2 pr-1"><a href="{% url 'group' pk=s_m.0.group.pk %}">{{ s_m.0.group }}</a></td>

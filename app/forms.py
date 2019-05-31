@@ -5,6 +5,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm as _UserCreationForm
 from django.db import transaction
+from django.core.files.images import get_image_dimensions
+from django.contrib.auth.forms import PasswordChangeForm
 import app.models as models
 
 
@@ -28,10 +30,27 @@ class AuthForm(AuthenticationForm):
 
 
 class UserCreationForm(_UserCreationForm):
-    f_name = forms.CharField(max_length=256, required=True, label='Имя')
-    s_name = forms.CharField(max_length=256, required=True, label='Фамилия')
-    t_name = forms.CharField(max_length=256, required=False, label='Отчество')
-    email = forms.EmailField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('label_suffix', '')
+        super(UserCreationForm, self).__init__(*args, **kwargs)
+
+    f_name = forms.CharField(max_length=256, required=True, label='Имя', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите имя',
+    }))
+    s_name = forms.CharField(max_length=256, required=True, label='Фамилия', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите фамилию',
+    }))
+    t_name = forms.CharField(max_length=256, required=False, label='Отчество', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите отчество',
+    }))
+    email = forms.EmailField(required=False, label='Почта', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите почту',
+    }))
 
     class Meta(_UserCreationForm.Meta):
         model = models.User
@@ -89,6 +108,15 @@ class TeacherSignUpForm(UserCreationForm):
         user.save()
         models.Teacher.objects.create(user=user)
         return user
+
+
+class MyPasswordChangeForm(PasswordChangeForm):
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('label_suffix', '')
+        super(PasswordChangeForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control mb-3'
 
 
 class SubjectAddForm(forms.ModelForm):
@@ -364,3 +392,58 @@ class MarkAddForm(forms.ModelForm):
     class Meta:
         model = models.Mark
         fields = ['task', 'student_teacher_subject', 'points']
+
+
+class SettingsForm(forms.ModelForm):
+    patronymic = forms.CharField(max_length=256, required=False, label='Отчество', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите отчество',
+    }))
+
+    email = forms.EmailField(required=False, label='Почта', widget=forms.TextInput(attrs={
+        'class': 'form-control mb-3',
+        'placeholder': 'Введите почту',
+    }))
+    avatar = forms.FileField(
+        widget=forms.FileInput(),
+        required=False, label='Аватар'
+    )
+
+    class Meta:
+        model = models.User
+        fields = ['patronymic', 'email', 'avatar']
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data['avatar']
+        if avatar.__class__.__name__ == 'ImageFieldFile':
+            return avatar
+        try:
+            w, h = get_image_dimensions(avatar)
+
+            # validate dimensions
+            min_width = min_height = 300
+            if w < min_width or h < min_height:
+                raise forms.ValidationError(u'Please use an image that is %s x %s pixels or bigger.'
+                                            % (min_width, min_height))
+
+            if w / h > 1.05 or w / h < 0.95:
+                raise forms.ValidationError(u'Пожалуйста используйте квадратную картинку')
+
+            # validate content type
+            main, sub = avatar.content_type.split('/')
+            if not (main == 'image' and sub in ['jpeg', 'pjpeg', 'jpg', 'png']):
+                raise forms.ValidationError(u'Please use a JPEG or PNG image.')
+
+            # validate file size
+            if len(avatar) > (5 * 1024 * 1024):
+                raise forms.ValidationError(
+                    u'Avatar file size may not exceed 20k.')
+
+        except AttributeError:
+            """
+            Handles case when we are updating the user profile
+            and do not supply a new avatar
+            """
+            pass
+
+        return avatar

@@ -26,6 +26,10 @@ urlpatterns = [
     path('tasks/<int:page>/', view.TaskListView.as_view(), name='task_list'),
     path('tasks/', view.TaskListView.as_view(), name='task_list'),
     path('task/<int:pk>/', view.TaskView.as_view(), name='task'),
+    path('user/<int:pk>/', view.UserPageView.as_view(), name='user'),
+    path('user/', view.UserPageView.as_view(), name='user'),
+    path('settings/password', view.PasswordChangeFormView.as_view(), name='password'),
+    path('settings/', view.UserSettingsPageView.as_view(), name='settings'),
     path('', view.HomeView.as_view(), name='home'),
 ]
 
