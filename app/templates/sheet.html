@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block lb-block %}
+<table class="table table-sm table-striped mb-0 table-responsive-md" id="sheet">
+<caption>Личная ведомость</caption>
+<thead>
+    <tr class="d-flex col-12 p-0">
+    <th class="th-sm col-1 pr-1 pl-3">#</th>
+    <th class="th-sm col-9 pr-1 pl-3">Предмет</th>
+    <th class="th-sm col-2 pl-3">Баллы</th>
+    </tr>
+</thead>
+<tbody>
+{% for foo in s_m %}
+<div>
+<tr class="d-flex col-12 p-0">
+    <td class="col-1 pr-1">{{ forloop.counter }}</td>
+    <td class="col-9 pr-1"><a href="{% url 'course' pk=foo.0.pk %}">{{ foo.0 }}</a></td>
+    <td class="col-2">{{ foo.1 }}</td>
+</tr>
+</div>
+{% empty %}
+    Список пуст.
+{% endfor %}
+</tbody>
+</table>
+<script>
+$(document).ready(function () {
+$('#sheet').DataTable({
+"autoWidth": false,
+"searching": false,
+"paging": false,
+"info": false,
+columnDefs: [{
+orderable: false
+}]
+});})
+</script>
+{% endblock %}
+
+{% block rt-block %}
+
+{% endblock %}

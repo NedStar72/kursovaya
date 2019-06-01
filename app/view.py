@@ -413,7 +413,7 @@ class TaskListView(LoginRequiredMixin, ListView):
     template_name = 'task_list.html'
     model = models.Task
     context_object_name = 'tasks'
-    paginate_by = 2
+    paginate_by = 10
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_teacher:
@@ -582,4 +582,21 @@ class PasswordChangeFormView(PasswordChangeView):
     def get_context_data(self, **kwargs):
         context = super(PasswordChangeFormView, self).get_context_data(**kwargs)
         context['title'] = 'Смена пароля'
+        return context
+
+
+class PersonalSheetView(LoginRequiredMixin, TemplateView):
+    template_name = 'sheet.html'
+
+    def get(self, request, *args, **kwargs):
+        if self.request.user.is_student:
+            return super(PersonalSheetView, self).get(request, *args, **kwargs)
+        return redirect('/')
+
+    def get_context_data(self, **kwargs):
+        context = super(PersonalSheetView, self).get_context_data(**kwargs)
+        student = self.request.user.student
+        subjects = student.teacher_subjects.all()
+        context['s_m'] = [(x, models.Mark.sum(x.get_marks(student))) for x in subjects]
+        context['title'] = 'Ведомость'
         return context

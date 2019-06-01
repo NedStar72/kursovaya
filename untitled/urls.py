@@ -30,6 +30,7 @@ urlpatterns = [
     path('user/', view.UserPageView.as_view(), name='user'),
     path('settings/password', view.PasswordChangeFormView.as_view(), name='password'),
     path('settings/', view.UserSettingsPageView.as_view(), name='settings'),
+    path('sheet/', view.PersonalSheetView.as_view(), name='sheet'),
     path('', view.HomeView.as_view(), name='home'),
 ]
 

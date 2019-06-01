@@ -21,7 +21,7 @@
 <h2 class="font-weight-normal mb-3 text-left">{{ title }}</h2>
 <div>Курс: <a href="{% url 'course' pk=course.pk %}">{{ course }}</a></div>
 <div class="mb-4">Преподаватель: <a href="{% url 'user' pk=course.teacher.pk %}">{{ course.teacher }}</a></div>
-<table id="stable" class="table table-sm table-striped table-borderless table-responsive-md">
+<table id="stable" class="table table-sm table-striped table-responsive-md">
     <thead>
         <tr>
             <th class="pl-3 pr-2 pt-0">#</th>
@@ -36,8 +36,8 @@
     <tbody>
         {% for s_m in s_ms %}
         <tr>
-        <th scope="row">{{ forloop.counter }}</th>
-        <th scope="row"><a href="{% url 'user' pk=s_m.0.pk %}">{{ s_m.0 }}</a></th>
+        <td scope="row">{{ forloop.counter }}</td>
+        <td scope="row"><a href="{% url 'user' pk=s_m.0.pk %}">{{ s_m.0 }}</a></td>
         {% for m in s_m.1 %}
             <td class="text-center">
                 {% if m and m.get_completed_task %}

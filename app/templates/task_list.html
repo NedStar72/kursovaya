@@ -21,6 +21,8 @@
     </div>{% endif %}
     <div class="col-12 p-0 pt10 mt-1 text-muted">{{ task.get_teacher }}</div>
     </a>
+    {% empty %}
+        <span class="text-muted">Нет подходящих заданий.</span>
     {% endfor %}
 </div>
 

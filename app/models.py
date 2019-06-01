@@ -147,6 +147,12 @@ class TeacherSubject(models.Model):
     def get_day(self):
         return DAY_OF_THE_WEEK[self.day_of_week]
 
+    def get_marks(self, student):
+        return Mark.objects.filter(
+            student_teacher_subject=StudentTeacherSubject.objects.get(student=student, teacher_subject=self),
+            task__in=self.tasks.all()
+        )
+
     def __str__(self):
         return self.subject.__str__()
 
@@ -298,6 +304,17 @@ class Mark(models.Model):
             )
         except:
             return None
+
+    @staticmethod
+    def sum(marks):
+        summa = 0
+        for mark in marks:
+            summa += mark.points
+        count = marks.count()
+        if count == 0:
+            return 0
+        else:
+            return summa / marks.count()
 
     def __str__(self):
         return self.task.__str__() + ' : ' + self.points.__str__()
