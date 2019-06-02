@@ -5,7 +5,10 @@ from django.db.models.signals import post_delete
 from django.utils.translation import ugettext as _
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import AbstractUser
-from PIL import Image
+from django.db.models.signals import post_save, m2m_changed
+from notifications.signals import notify
+from notifications.models import Notification
+from django.dispatch import receiver
 
 
 def user_avatar_path(instance, filename):
@@ -168,11 +171,12 @@ class StudentTeacherSubject(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=254, verbose_name=_(u'Название'))
     text = models.TextField(verbose_name=_(u'Текст'))
-    start_date = models.DateField(verbose_name=_(u'Дата начала'), auto_now=True)
+    start_date = models.DateField(verbose_name=_(u'Дата начала'), auto_now_add=True)
     end_date = models.DateField(verbose_name=_(u'Дата окончания'))
     teacher_subjects = models.ManyToManyField(TeacherSubject, related_name='tasks', related_query_name='tasks',
                                               verbose_name='Курсы')
     is_reciprocal = models.BooleanField(default=False, verbose_name='Разрешить ответы')
+    is_created = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _(u'Задание')
@@ -181,10 +185,20 @@ class Task(models.Model):
         ordering = ['end_date', 'start_date', 'name']
         db_table = 'Tasks'
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None, is_notification=True):
+        temp = super(Task, self).save(force_insert=force_insert, force_update=force_update, using=using,
+                                      update_fields=update_fields)
+        if is_notification:
+            notify.send(sender=self,
+                        recipient=User.objects.filter(student__in=Student.objects.filter(
+                            teacher_subjects__in=self.teacher_subjects.all())),
+                        verb='Обновленно задание.')
+        return temp
+
     def delete(self, using=None, keep_parents=False):
-        files = TaskFile.objects.filter(task=self)
-        for file in files:
-            file.delete()
+        TaskFile.objects.filter(task=self).delete()
+        Notification.objects.filter(actor_object_id=self.id).delete()
         super(Task, self).delete(using, keep_parents)
 
     def get_teacher(self):
@@ -210,11 +224,6 @@ class CompletedTask(models.Model):
         default_related_name = 'completed_tasks'
         ordering = ['date', 'task__name', 'student__user__last_name']
         db_table = 'CompletedTasks'
-
-    def save(self, *args, **kwargs):
-        if self.date != datetime.now().date():
-            self.date = datetime.now().date()
-        super(CompletedTask, self).save(*args, **kwargs)
 
     def get_mark(self):
         try:
@@ -288,7 +297,7 @@ class Mark(models.Model):
                                                 related_name='marks',
                                                 related_query_name='marks')
     points = models.FloatField(verbose_name='Баллы')
-    date = models.DateField(verbose_name='Дата получения', auto_now=True)
+    date = models.DateField(verbose_name='Дата получения', auto_now_add=True)
 
     class Meta:
         verbose_name = _(u'Оценка')
@@ -318,3 +327,14 @@ class Mark(models.Model):
 
     def __str__(self):
         return self.task.__str__() + ' : ' + self.points.__str__()
+
+
+@receiver(m2m_changed, sender=TeacherSubject.tasks.through)
+def task_created(sender, instance, **kwargs):
+    if kwargs['action'] == "post_add" and instance.is_created:
+        notify.send(sender=instance,
+                    recipient=User.objects.filter(student__in=Student.objects.filter(
+                        teacher_subjects__in=instance.teacher_subjects.all())),
+                    verb='Новое задание.')
+        instance.is_created = False
+        instance.save(is_notification=False)

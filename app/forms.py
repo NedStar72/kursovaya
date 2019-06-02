@@ -301,6 +301,49 @@ class TaskAddForm(forms.ModelForm):
         }
 
 
+class TaskEditForm(forms.ModelForm):
+    name = forms.CharField(max_length=254, label='Название',
+                           widget=forms.TextInput(attrs={
+                               'class': 'form-control',
+                               'placeholder': 'Введите название',
+                           }))
+
+    end_date = forms.DateField(label='Дата окончания', input_formats=['%d/%m/%Y', '%d.%m.%Y'],
+                               widget=forms.DateInput(attrs={
+                                   'class': 'form-control datepicker',
+                                   'placeholder': 'Выберите дату',
+                               }))
+
+    files = forms.FileField(label='Выберите файлы', required=False,
+                            widget=forms.ClearableFileInput(attrs={
+                                'multiple': True,
+                            }))
+
+    is_reciprocal = forms.BooleanField(initial=False, required=False,
+                                       label='Разрешить ответы',
+                                       widget=forms.CheckboxInput({
+                                           'class': 'custom-control-input'
+                                       }))
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('label_suffix', '')
+        super(TaskEditForm, self).__init__(*args, **kwargs)
+        self.fields['text'].required = False
+
+    class Meta:
+        model = models.Task
+        fields = ['name', 'end_date', 'text', 'is_reciprocal', 'files']
+        labels = {
+            'text': 'Текст',
+        }
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': '3',
+            }),
+        }
+
+
 class CompletedTaskAddForm(forms.ModelForm):
 
     task = forms.ModelChoiceField(required=True,

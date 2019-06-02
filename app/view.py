@@ -68,6 +68,7 @@ class HomeView(LoginRequiredMixin, CreateView):
                         break
             context['student_tasks'] = temp
         context['title'] = 'Главная страница'
+        context['notify'] = self.request.user.notifications.active()
         return context
 
 
@@ -382,14 +383,8 @@ class TaskView(LoginRequiredMixin, DetailView):
 
 class TaskEditView(LoginRequiredMixin, UpdateView):
     model = models.Task
-    form_class = forms.TaskAddForm
+    form_class = forms.TaskEditForm
     template_name = 'task_edit.html'
-
-    def get_form_kwargs(self):
-        kwargs = super(TaskEditView, self).get_form_kwargs()
-        if self.request.user.is_teacher:
-            kwargs['teacher'] = self.request.user.teacher
-        return kwargs
 
     def post(self, request, *args, **kwargs):
         files = request.FILES.getlist('files')

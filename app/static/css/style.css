@@ -204,7 +204,22 @@ img{
 }
 
 .avatar_container{
-    max-height: 300px;
-    max-width: 300px;
+    max-height: 200px;
+    max-width: 200px;
     margin: auto;
+}
+
+.back_color{
+    background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.my_border{
+    border-color: rgba(0, 0, 0, 0.125) !important;
+}
+
+.size-normal{
+    font-size: 0.875rem !important;
+}
+.size-small{
+    font-size: 0.725rem !important;
 }

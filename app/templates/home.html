@@ -4,7 +4,7 @@
 {% if user.is_student %}
 <div class="row no-gutters align-items-start ">
     <div class="d-flex flex-column col-12 col-md-6 pr-3 mb-3 position-relative">
-        <h4 class="mb-3 font-weight-normal">Ближайшие задания</h4>
+       <a href="{% url 'task_list' page=1 %}" class="h4 mb-3 font-weight-normal text-dark">Ближайшие задания</a>
         <div class="line"></div>
         <div class="shade d-lg-none"></div>
         {% for foo in student_tasks %}
@@ -112,10 +112,10 @@
         <div class="card-columns">
             {% for course in courses %}
             <a class="card mb-3 z-depth-1 border" href="{% url 'course' pk=course.pk %}">
-                <div class="card-header text-body">{{ course.get_day }}, {{ course.time }}</div>
+                <div class="card-header text-body size-normal">{{ course.get_day }}, {{ course.time }}</div>
                 <div class="card-body text-body">
                     <h5 class="card-title">{{ course }}</h5>
-                    <p class="card-text">{{ course.teacher }}</p>
+                    <p class="card-text size-small">{{ course.teacher }}</p>
                 </div>
             </a>
             {% endfor %}
@@ -147,11 +147,32 @@
     </div>
 {% endif %}
 {% endblock %}
+
 {% block rt-block %}
 {% if user.is_student %}
-<div class="pb-3 pb-lg-0">
-Уведомления для студента
+
+<div>
+    {% load notifications_tags %}
+    {% notifications_unread as unread_count %}
+    <h4 class="mb-3 font-weight-normal">Уведомления{% if unread_count %}<span class="h5 ml-1">(<strong class="">{{ unread_count }}</strong>)</span>{% endif %}</h4>
+    {% load humanize %}
+    {% for n in notify %}
+    <a class="card size-normal z-depth-1 mb-3 border" href="{% url 'task' pk=n.actor_object_id %}">
+      <div class="toast-header back_color my_border">
+        <strong class="mr-auto pt-1 pb-1">{{ n.verb }}</strong>
+        {% if n.unread %}
+        <small class="badge badge-primary z-depth-0 mr-2">Новое</small>
+        {% else %}
+        <small class="text-center">{{ n.timestamp|naturaltime }}</small>
+        {% endif %}
+      </div>
+      <div class="toast-body text-dark">
+        </small>{{ n.actor }}
+      </div>
+    </a>
+    {% endfor %}
 </div>
+
 {% elif user.is_teacher %}
 <div class="pb-3 pb-lg-0">
 <button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Создать задание</button>

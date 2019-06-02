@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_cleanup.apps.CleanupConfig',
+    'django.contrib.humanize',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +129,5 @@ MEDIA_URL = '/files/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'files')
 
 AUTH_USER_MODEL = 'app.User'
+
+DJANGO_NOTIFICATIONS_CONFIG = {'SOFT_DELETE': True}
