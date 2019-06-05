@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 import os
 from django.db import models
 from django.db.models.signals import post_delete
@@ -152,9 +153,18 @@ class TeacherSubject(models.Model):
 
     def get_marks(self, student):
         return Mark.objects.filter(
-            student_teacher_subject=StudentTeacherSubject.objects.get(student=student, teacher_subject=self),
-            task__in=self.tasks.all()
+            student_teacher_subject=StudentTeacherSubject.objects.get(student=student, teacher_subject=self)
         )
+
+    def get_end_time(self):
+        start = datetime(
+            2000, 1, 1,
+            hour=self.time.hour, minute=self.time.minute, second=self.time.second)
+        end = start + timedelta(hours=1, minutes=30)
+        return end.time()
+
+    def str_for_n(self):
+        return self.__str__()
 
     def __str__(self):
         return self.subject.__str__()
@@ -187,14 +197,14 @@ class Task(models.Model):
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None, is_notification=True):
-        temp = super(Task, self).save(force_insert=force_insert, force_update=force_update, using=using,
-                                      update_fields=update_fields)
+        super(Task, self).save(force_insert=force_insert, force_update=force_update, using=using,
+                               update_fields=update_fields)
         if is_notification:
             notify.send(sender=self,
                         recipient=User.objects.filter(student__in=Student.objects.filter(
                             teacher_subjects__in=self.teacher_subjects.all())),
-                        verb='Обновленно задание.')
-        return temp
+                        verb='Обновлено задание.',
+                        description='task')
 
     def delete(self, using=None, keep_parents=False):
         TaskFile.objects.filter(task=self).delete()
@@ -206,6 +216,9 @@ class Task(models.Model):
 
     def get_course(self, student):
         return self.teacher_subjects.intersection(student.teacher_subjects.all())
+
+    def str_for_n(self):
+        return self.name
 
     def __str__(self):
         return self.name.__str__()
@@ -237,10 +250,23 @@ class CompletedTask(models.Model):
         except:
             return None
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(CompletedTask, self).save(force_insert=force_insert, force_update=force_update, using=using,
+                                        update_fields=update_fields)
+        notify.send(sender=self,
+                    recipient=self.task.get_teacher().user,
+                    verb='Получен ответ.',
+                    description='completed_task')
+
+    def str_for_n(self):
+        return self.task.str_for_n()
+
     def delete(self, using=None, keep_parents=False):
         files = TaskFile.objects.filter(completed_task=self)
         for file in files:
             file.delete()
+        Notification.objects.filter(actor_object_id=self.id).delete()
         # mark = self.get_mark()
         # if mark:
         #     mark.delete()
@@ -306,6 +332,21 @@ class Mark(models.Model):
         ordering = ['date']
         db_table = 'Marks'
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        super(Mark, self).save(force_insert=force_insert, force_update=force_update, using=using,
+                               update_fields=update_fields)
+        if self.task is None:
+            notify.send(sender=self.student_teacher_subject.teacher_subject,
+                        recipient=self.student_teacher_subject.student.user,
+                        verb='Выставлены баллы',
+                        description='course')
+        else:
+            notify.send(sender=self.task,
+                        recipient=self.student_teacher_subject.student.user,
+                        verb='Выставлены баллы',
+                        description='task')
+
     def get_completed_task(self):
         try:
             return CompletedTask.objects.get(
@@ -313,6 +354,9 @@ class Mark(models.Model):
             )
         except:
             return None
+
+    def str_for_n(self):
+        return self.task.str_for_n()
 
     @staticmethod
     def sum(marks):
@@ -323,7 +367,7 @@ class Mark(models.Model):
         if count == 0:
             return 0
         else:
-            return summa / marks.count()
+            return summa
 
     def __str__(self):
         return self.task.__str__() + ' : ' + self.points.__str__()

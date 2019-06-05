@@ -30,95 +30,51 @@
             <a href="#schedule" role="button" data-slide="prev" class="mr-2 arrow text-black-50 rounded-circle">
                 <i class="far fa-chevron-circle-left"></i>
             </a>
-            <div class="flex-grow-1" style="min-width:0;">
+            <div class="flex-grow-1" style="min-width:0; height: 206px;">
                 <div id="schedule" class="carousel slide" data-interval="false" data-ride="carousel">
                     <div class="carousel-inner" >
-                        <div class="carousel-item active">
-                            <div class="col-12 p-0 font-weight-light onelinetext">Воскресенье, 14.04.2019</div>
-                            <div class="d-flex">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block">- 09:30</span></div>
+                        {% load filters %}
+                        {% for today in timetable %}
+                        <div class="carousel-item {% if forloop.first %} active{% endif %}">
+                            <div class="col-12 p-0 font-weight-light onelinetext">{{ today.day_of_week }}, {{ today.date }}</div>
+                            {% for lesson in today.lessons %}
+                            <div class="d-flex{% if not forloop.first %} border-top{% endif %}">
+                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0">
+                                    <span>{{ lesson.time|time_to_str }} </span><span class="d-none d-sm-inline-block">- {{ lesson.get_end_time|time_to_str }}</span>
+                                </div>
                                 <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
+                                    <div class="onelinetext pt-1 text-center"><a href="{% url 'course' pk=lesson.pk %}" class="text-primary">{{ lesson }}</a></div>
+                                    <div class="onelinetext pt10 pb-1 text-center text-dark">{{ lesson.teacher.user.last_name }} {{ lesson.teacher.user.first_name.0 }}.{{ lesson.teacher.user.patronymic.0 }}.</div>
                                 </div>
                             </div>
-                            <div class="d-flex border-top">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>09:45</span><span class="d-none d-sm-inline-block">- 11:15</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
-                            <div class="d-flex border-top">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>11:30</span><span class="d-none d-sm-inline-block">- 13:00</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
-                            <div class="d-flex border-top">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>13:30</span><span class="d-none d-sm-inline-block">- 15:00</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
+                            {% empty %}
+                                <span class="text-muted mt-3 d-block">Нет занятий.</span>
+                            {% endfor %}
                         </div>
-                        <div class="carousel-item">
-                            <div class="col-12 p-0 font-weight-light onelinetext">Понедельник, 15.04.2019</div>
-                            <div class="d-flex">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block">- 09:30</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
-                            <div class="d-flex border-top">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>09:45</span><span class="d-none d-sm-inline-block">- 11:15</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
-                            <div class="d-flex border-top">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>11:30</span><span class="d-none d-sm-inline-block">- 13:00</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <div class="col-12 p-0 font-weight-light onelinetext">Вторник, 16.04.2019</div>
-                            <div class="d-flex">
-                                <div class="pt10 align-self-center pr-2 text-center text-dark flex-shrink-0"><span>08:00</span><span class="d-none d-sm-inline-block"> - 09:30</span></div>
-                                <div class="flex-column flex-fill" style="min-width:0;">
-                                    <div class="onelinetext pt-1 text-center"><a href="" class="text-primary">Математическая логика</a></div>
-                                    <div class="onelinetext pt10 pb-1 text-center text-dark">Платонов М.Л.</div>
-                                </div>
-                            </div>
+                        {% endfor %}
                         </div>
                     </div>
                 </div>
-            </div>
             <a href="#schedule" role="button" data-slide="next" class="ml-2 arrow text-black-50 rounded-circle">
                 <i class="far fa-chevron-circle-right"></i>
             </a>
+            </div>
         </div>
-
     </div>
     <div class="col-12 mt-4">
         <h4 class="mb-3 font-weight-normal">Курсы</h4>
-        <div class="card-columns">
-            {% for course in courses %}
-            <a class="card mb-3 z-depth-1 border" href="{% url 'course' pk=course.pk %}">
-                <div class="card-header text-body size-normal">{{ course.get_day }}, {{ course.time }}</div>
-                <div class="card-body text-body">
-                    <h5 class="card-title">{{ course }}</h5>
-                    <p class="card-text size-small">{{ course.teacher }}</p>
-                </div>
+        <div class="list-group border-0">
+        {% for course in courses %}
+            <a href="{% url 'course' pk=course.pk %}" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex flex-wrap justify-content-md-between">
+              <h5 class="col-12 col-md-auto pl-0 mb-0 ">{{ course.subject.name }}</h5>
+              <small class=" d-flex justify-content-md-between mt-1">
+                  <span class="">{{ course.get_day }}</span>
+                  <span class="badge badge-primary badge-pill z-depth-1 timespan ml-2">{{ course.time }}</span>
+              </small>
+            </div>
             </a>
-            {% endfor %}
+        {% endfor %}
         </div>
     </div>
 </div>
@@ -129,12 +85,18 @@
     <div class="d-flex flex-wrap justify-content-md-between">
       <h5 class="col-12 col-md-auto pl-0 mb-0 ">{{ course.subject.name }}</h5>
       <small class=" d-flex justify-content-md-between mt-1">
-          <span class="pr-2 pr-md-0">{{ course.get_day }}</span>
-          <span class="badge badge-primary badge-pill z-depth-1 timespan">{{ course.time }}</span>
+          <span class="">{{ course.get_day }}</span>
+          <span class="badge badge-primary badge-pill z-depth-1 timespan ml-2">{{ course.time }}</span>
       </small>
     </div>
     </a>
 {% endfor %}
+</div>
+<h4 class="mb-3 mt-4 font-weight-normal">Последние задания</h4>
+<div class="list-group">
+  {% for task in self_tasks %}
+      <a href="{% url 'task' pk=task.pk %}" class="list-group-item list-group-item-action">{{ task }}</a>
+  {% endfor %}
 </div>
 {% else %}
 <div>
@@ -149,33 +111,10 @@
 {% endblock %}
 
 {% block rt-block %}
-{% if user.is_student %}
 
-<div>
-    {% load notifications_tags %}
-    {% notifications_unread as unread_count %}
-    <h4 class="mb-3 font-weight-normal">Уведомления{% if unread_count %}<span class="h5 ml-1">(<strong class="">{{ unread_count }}</strong>)</span>{% endif %}</h4>
-    {% load humanize %}
-    {% for n in notify %}
-    <a class="card size-normal z-depth-1 mb-3 border" href="{% url 'task' pk=n.actor_object_id %}">
-      <div class="toast-header back_color my_border">
-        <strong class="mr-auto pt-1 pb-1">{{ n.verb }}</strong>
-        {% if n.unread %}
-        <small class="badge badge-primary z-depth-0 mr-2">Новое</small>
-        {% else %}
-        <small class="text-center">{{ n.timestamp|naturaltime }}</small>
-        {% endif %}
-      </div>
-      <div class="toast-body text-dark">
-        </small>{{ n.actor }}
-      </div>
-    </a>
-    {% endfor %}
-</div>
-
-{% elif user.is_teacher %}
+{% if user.is_teacher %}
 <div class="pb-3 pb-lg-0">
-<button type="button" class="btn btn-primary m-0 btn-block" data-toggle="modal" data-target=".bd-example-modal-xl">Создать задание</button>
+<button type="button" class="btn btn-primary m-0 btn-block mb-md-4" data-toggle="modal" data-target=".bd-example-modal-xl">Создать задание</button>
 <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
     <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
@@ -249,7 +188,51 @@ selectYears: false,
 formatSubmit: 'dd/mm/yyyy'
 })
 </script>
-{% else %}
-    Добавление курса, предмета, пользователей
 {% endif %}
+
+<div class="d-none d-lg-block">
+    <h4 class="mb-3 font-weight-normal">Уведомления{% if unread_count %}<span class="h5 ml-1">(<strong class=""><a href="{% url 'notifications' %}">{{ unread_count }}</a></strong>)</span>{% endif %}</h4>
+    {% if notify_1|length == 0 and notify_2|length == 0 %}
+    <span class="text-muted">Нет уведомлений.</span>
+    {% endif %}
+    {% load humanize %}
+    {% for n in notify_1 %}
+    <a class="card size-normal z-depth-1 mb-3 border" href="
+    {% if n.description == 'course' %}
+        {% url 'course' pk=n.actor_object_id %}
+    {% elif n.description == 'task' %}
+        {% url 'task' pk=n.actor_object_id %}
+    {% elif n.description == 'completed_task' %}
+        {% url 'completed_task' pk=n.actor_object_id %}
+    {% endif %}
+    ">
+      <div class="toast-header back_color my_border">
+        <strong class="mr-auto pt-1 pb-1">{{ n.verb }}</strong>
+        <small class="badge badge-primary z-depth-0 mr-2">Новое</small>
+      </div>
+      <div class="toast-body text-dark">
+        {{ n.actor }}
+      </div>
+    </a>
+    {% endfor %}
+    {% for n in notify_2 %}
+    <a class="card size-normal z-depth-1 mb-3 border" href="
+    {% if n.description == 'course' %}
+        {% url 'course' pk=n.actor_object_id %}
+    {% elif n.description == 'task' %}
+        {% url 'task' pk=n.actor_object_id %}
+    {% elif n.description == 'completed_task' %}
+        {% url 'completed_task' pk=n.actor_object_id %}
+    {% endif %}
+    ">
+      <div class="toast-header back_color my_border">
+        <strong class="mr-auto pt-1 pb-1">{{ n.verb }}</strong>
+        <small class="text-center">{{ n.timestamp|naturaltime }}</small>
+      </div>
+      <div class="toast-body text-dark">
+        {{ n.actor.str_for_n }}
+      </div>
+    </a>
+    {% endfor %}
+</div>
 {% endblock %}

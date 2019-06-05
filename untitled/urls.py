@@ -33,6 +33,8 @@ urlpatterns = [
     path('settings/password', view.PasswordChangeFormView.as_view(), name='password'),
     path('settings/', view.UserSettingsPageView.as_view(), name='settings'),
     path('sheet/', view.PersonalSheetView.as_view(), name='sheet'),
+    path('notifications/<int:page>', view.NotificationListView.as_view(), name='notifications'),
+    path('notifications/', view.NotificationListView.as_view(), name='notifications'),
     path('', view.HomeView.as_view(), name='home'),
 ]
 

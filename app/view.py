@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from datetime import timedelta
 from django.http import Http404
 from django.http import HttpRequest
 from django.template import RequestContext
@@ -29,7 +29,14 @@ import app.forms as forms
 from braces import views
 
 
-class HomeView(LoginRequiredMixin, CreateView):
+class OverrideGetContext:
+    def get_context_data(self, **kwargs):
+        context = super(OverrideGetContext, self).get_context_data(**kwargs)
+        context['unread_count'] = self.request.user.notifications.unread().count()
+        return context
+
+
+class HomeView(LoginRequiredMixin, OverrideGetContext, CreateView):
     form_class = forms.TaskAddForm
     template_name = 'home.html'
 
@@ -55,6 +62,7 @@ class HomeView(LoginRequiredMixin, CreateView):
             teacher = self.request.user.teacher
             context['courseTeacher'] = teacher.teacher_subjects.all()
             context['form'] = forms.TaskAddForm(teacher=teacher)
+            context['self_tasks'] = models.Task.objects.filter(teacher_subjects__in=teacher.teacher_subjects.all()).order_by('-start_date')[:9]
         if self.request.user.is_student:
             student = self.request.user.student
             context['courses'] = courses = student.teacher_subjects.all()
@@ -67,12 +75,28 @@ class HomeView(LoginRequiredMixin, CreateView):
                         temp += [(task, course)]
                         break
             context['student_tasks'] = temp
+            now = datetime.today()
+            context['timetable'] = []
+            for i in range(0, 7):
+                if now.weekday() != 6:
+                    context['timetable'] += [{
+                        'day_of_week': models.DAY_OF_THE_WEEK[str(now.weekday() + 1)],
+                        'date': now.date(),
+                        'lessons': student.teacher_subjects.all().filter(day_of_week=str(now.weekday() + 1)),
+                    }]
+                now += timedelta(days=1)
         context['title'] = 'Главная страница'
-        context['notify'] = self.request.user.notifications.active()
+        # context['unread_count'] = self.request.user.notifications.unread().count()
+        context['notify_1'] = list(self.request.user.notifications.unread()[:4])
+        count = context['notify_1'].__len__()
+        if count < 5:
+            context['notify_2'] = list(self.request.user.notifications.read()[:5-count])
+        for n in context['notify_1']:
+            n.mark_as_read()
         return context
 
 
-class SheetView(LoginRequiredMixin, TemplateView):
+class SheetView(LoginRequiredMixin, OverrideGetContext, TemplateView):
 
     def get(self, request, *args, **kwargs):
         if request.user.is_student:
@@ -87,7 +111,7 @@ class SheetView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class SubjectAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+class SubjectAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, OverrideGetContext, CreateView):
     success_url = "/"
     template_name = "subject_add.html"
     model = models.Subject
@@ -102,7 +126,7 @@ class SubjectAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, Creat
         return redirect('/')
 
 
-class SpecialityAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+class SpecialityAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, OverrideGetContext, CreateView):
     success_url = "/"
     template_name = "subject_add.html"
     model = models.Specialty
@@ -113,7 +137,7 @@ class SpecialityAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, Cr
         return super().get_context_data(**kwargs)
 
 
-class GroupAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+class GroupAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, OverrideGetContext, CreateView):
     success_url = "/"
     template_name = "group_add.html"
     model = models.Group
@@ -177,7 +201,7 @@ class MyLoginView(LoginView):
         return super(MyLoginView, self).form_valid(form)
 
 
-class CourseAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, CreateView):
+class CourseAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, OverrideGetContext, CreateView):
     success_url = "/"
     template_name = "course_add.html"
     model = models.TeacherSubject
@@ -188,7 +212,7 @@ class CourseAddFormView(LoginRequiredMixin, views.SuperuserRequiredMixin, Create
         return super().get_context_data(**kwargs)
 
 
-class CourseView(LoginRequiredMixin, DetailView):
+class CourseView(LoginRequiredMixin, OverrideGetContext, DetailView):
     model = models.TeacherSubject
     template_name = 'course_page.html'
     context_object_name = 'course'
@@ -275,7 +299,7 @@ class SheetView(LoginRequiredMixin, DetailView):
         return context
 
 
-class TaskView(LoginRequiredMixin, DetailView):
+class TaskView(LoginRequiredMixin, OverrideGetContext, DetailView):
     model = models.Task
     template_name = 'task_page.html'
     context_object_name = 'task'
@@ -300,7 +324,7 @@ class TaskView(LoginRequiredMixin, DetailView):
                 c_t = models.CompletedTask.objects.get(student=request.user.student, task=self.get_object())
                 pk = c_t.task.teacher_subjects.filter(students=self.request.user.student).first().pk
                 c_t.delete()
-                return redirect('course', pk=pk)
+                return redirect('task', pk=self.get_object().pk)
             else:
                 request.POST = request.POST.copy()
                 request.POST['task'] = self.get_object().pk
@@ -381,7 +405,7 @@ class TaskView(LoginRequiredMixin, DetailView):
         return context
 
 
-class TaskEditView(LoginRequiredMixin, UpdateView):
+class TaskEditView(LoginRequiredMixin, OverrideGetContext, UpdateView):
     model = models.Task
     form_class = forms.TaskEditForm
     template_name = 'task_edit.html'
@@ -404,7 +428,7 @@ class TaskEditView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class TaskListView(LoginRequiredMixin, ListView):
+class TaskListView(LoginRequiredMixin, OverrideGetContext, ListView):
     template_name = 'task_list.html'
     model = models.Task
     context_object_name = 'tasks'
@@ -484,7 +508,7 @@ def sort_merged_list(item):
     return item[0].date if item[0].date < item[1].date else item[1].date
 
 
-class GroupView(LoginRequiredMixin, DetailView):
+class GroupView(LoginRequiredMixin, OverrideGetContext, DetailView):
     model = models.Group
     template_name = 'group_page.html'
     context_object_name = 'group'
@@ -497,7 +521,7 @@ class GroupView(LoginRequiredMixin, DetailView):
         return context
 
 
-class CompletedTaskView(LoginRequiredMixin, DetailView):
+class CompletedTaskView(LoginRequiredMixin, OverrideGetContext, DetailView):
     model = models.CompletedTask
     template_name = 'completed_task_page.html'
     context_object_name = 'completed_task'
@@ -536,7 +560,7 @@ class CompletedTaskView(LoginRequiredMixin, DetailView):
         return context
 
 
-class UserPageView(LoginRequiredMixin, DeleteView):
+class UserPageView(LoginRequiredMixin, OverrideGetContext, DeleteView):
     model = models.User
     template_name = 'user_page.html'
     context_object_name = 'this_user'
@@ -554,7 +578,7 @@ class UserPageView(LoginRequiredMixin, DeleteView):
         return context
 
 
-class UserSettingsPageView(LoginRequiredMixin, UpdateView):
+class UserSettingsPageView(LoginRequiredMixin, OverrideGetContext, UpdateView):
     model = models.User
     form_class = forms.SettingsForm
     template_name = 'settings.html'
@@ -569,7 +593,7 @@ class UserSettingsPageView(LoginRequiredMixin, UpdateView):
         return context
 
 
-class PasswordChangeFormView(PasswordChangeView):
+class PasswordChangeFormView(OverrideGetContext, PasswordChangeView):
     form_class = forms.MyPasswordChangeForm
     template_name = 'change_password.html'
     success_url = '/user/'
@@ -580,7 +604,7 @@ class PasswordChangeFormView(PasswordChangeView):
         return context
 
 
-class PersonalSheetView(LoginRequiredMixin, TemplateView):
+class PersonalSheetView(LoginRequiredMixin, OverrideGetContext, TemplateView):
     template_name = 'sheet.html'
 
     def get(self, request, *args, **kwargs):
@@ -594,4 +618,27 @@ class PersonalSheetView(LoginRequiredMixin, TemplateView):
         subjects = student.teacher_subjects.all()
         context['s_m'] = [(x, models.Mark.sum(x.get_marks(student))) for x in subjects]
         context['title'] = 'Ведомость'
+        return context
+
+
+class NotificationListView(LoginRequiredMixin, OverrideGetContext, ListView):
+    template_name = 'notifications_list.html'
+    model = models.Notification
+    context_object_name = 'notifications'
+    paginate_by = 10
+
+    @staticmethod
+    def page(page=1):
+        return redirect('task_list', page=page)
+
+    def get_queryset(self):
+        return self.request.user.notifications.active()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(NotificationListView, self).get_context_data(object_list=object_list, **kwargs)
+        context['notifications'] = [(n, n.unread) for n in context['notifications']]
+        for n in context['notifications']:
+            if n[0].unread:
+                n[0].mark_as_read()
+        context['title'] = 'Уведомления'
         return context

@@ -8,7 +8,7 @@
 <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
     {% for error in form.non_field_errors %}
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger size-normal" role="alert">
     <strong>Ошибка!</strong> {{ error }}
     </div>
     {% endfor %}

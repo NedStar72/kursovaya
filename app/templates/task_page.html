@@ -114,8 +114,8 @@
         {% endif %}
     {% if form %}
     <div class="d-flex flex-wrap justify-content-between">
-    <button type="button" class="btn btn-primary waves-effect m-0 btn-block col-12 col-md-2" data-toggle="modal" data-target="#editTask">Изменить</button>
-    <button type="button" class="btn btn-danger btn-sm btn-block col-12 col-md-2 ml-md-2 mt-2 mt-md-0 btn-blue-grey" data-toggle="modal" data-target="#delTask">Удалить</button>
+    <button type="button" class="btn btn-primary waves-effect m-0 col-12 col-md-auto pl-5 pr-5" data-toggle="modal" data-target="#editTask">Изменить</button>
+    <button type="button" class="btn btn-danger btn-sm ml-md-2 mt-2 mt-md-0 col-12 col-md-auto pl-5 pr-5 btn-blue-grey" data-toggle="modal" data-target="#delTask">Удалить</button>
     </div>
     <div class="modal fade bd-example-modal-xl p-0" tabindex="-1" id="editTask" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true" style="padding-left: 0px;">
         <div class="modal-dialog modal-xl">
@@ -188,7 +188,7 @@
                 <input class="file-path validate form-control" type="text" placeholder="Загрузите один или более файлов">
             </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm btn-block float-right col-12 col-lg-2 mt-2 mt-lg-0 mb-1">Отправить</button>
+        <button type="submit" class="btn btn-primary btn-sm  float-right col-12 col-lg-auto mt-2 mt-lg-0 mb-1">Отправить</button>
     </div>
     </form>
 {% endif %}

@@ -61,7 +61,7 @@ class UserCreationForm(_UserCreationForm):
         user.first_name = self.cleaned_data["f_name"]
         user.last_name = self.cleaned_data["s_name"]
         user.patronymic = self.cleaned_data["t_name"]
-        user.EMAIL_FIELD = self.cleaned_data["email"]
+        user.email = self.cleaned_data["email"]
         user.save(commit)
         return user
 

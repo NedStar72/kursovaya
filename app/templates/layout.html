@@ -32,7 +32,7 @@
             </li>
             {% if user.is_student %}
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Задания
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
@@ -47,7 +47,7 @@
             </li>
             {% endif %}
             <li class="nav-item dropdown d-md-none">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     {{ user.last_name }} {{ user.first_name }}
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
@@ -66,11 +66,14 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="avaLink">
             <a class="dropdown-item" href="{% url 'user' %}">Мой профиль</a>
+            <a class="dropdown-item" href="{% url 'notifications' %}">Уведомления{% if unread_count %} ({{ unread_count }}){% endif %}</a>
             <a class="dropdown-item" href="{% url 'settings' %}">Настройки</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{% url 'logout' %}">Выход</a>
         </div>
-        <a class="notice-count text-decoration-none" href="">99</a>
+        {% if unread_count %}
+            <a class="notice-count text-decoration-none" href="{% url 'notifications' %}">{{ unread_count }}</a>
+        {% endif %}
     </div>
     </div>
 </nav>

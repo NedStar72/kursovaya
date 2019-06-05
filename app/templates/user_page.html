@@ -4,6 +4,7 @@
 <div class="span8">
 {% if this_user.is_student %}
     <h6 class="mb-3">Группа: {% if this_user.student.group %}<a href="{% url 'group' pk=this_user.student.group.pk %}" class="font-weight-normal">{{ this_user.student.group }}</a>{% else %}не найдена{% endif %}</h6>
+    <h6 class="mb-3">Год поступления: <span class="font-weight-normal">{{ this_user.student.group.year|date:"Y" }}</span></h6>
     <h6 class="mb-3">Специальность: <span class="font-weight-normal">{{ this_user.student.group.specialty }}</span></h6>
 {% endif %}
     <h6 class="mb-3">Почта: <span class="font-weight-normal">{{ this_user.email|default:'<span class="text-muted">отсутствует</span>' }}</span></h6>
