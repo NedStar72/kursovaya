@@ -24,24 +24,28 @@
 <table id="stable" class="table table-sm table-striped table-responsive-md">
     <thead>
         <tr>
-            <th class="pl-3 pr-2 pt-0">#</th>
-            <th class="pl-3 pr-0 pt-0">Студент</th>
+            <th class="pl-3 pr-2 pt-0 r_border">#</th>
+            <th class="pl-3 pr-0 pt-0 r_border">Студент</th>
             {% for task in tasks %}
-            <th class="pl-3 pr-2 pt-0">{{ task.name }}</th>
+            <th class="pl-3 pr-2 pt-0 r_border">{{ task.name }}</th>
             {% endfor %}
-            <th class="pl-3 pr-2 pt-0">Доп. баллы</th>
-            <th class="pl-3 pr-2 pt-0">Сумма</th>
+            <th class="pl-3 pr-2 pt-0 r_border">Доп. баллы</th>
+            <th class="pl-3 pr-2 pt-0 r_border">Сумма</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="border-bottom border-right border-left">
         {% for s_m in s_ms %}
         <tr>
-        <td scope="row">{{ forloop.counter }}</td>
-        <td scope="row"><a href="{% url 'user' pk=s_m.0.pk %}">{{ s_m.0 }}</a></td>
+        <td scope="row" class="r_border">{{ forloop.counter }}</td>
+        <td scope="row" class="r_border"><a href="{% url 'user' pk=s_m.0.pk %}">{{ s_m.0 }}</a></td>
         {% for m in s_m.1 %}
-            <td class="text-center">
+            <td class="text-center r_border">
                 {% if m and m.get_completed_task %}
+                    {% if user.is_student %}
+                    {{ m.points }}
+                    {% else %}
                     <a href="{% url 'completed_task' pk=m.get_completed_task.pk %}">{{ m.points }}</a>
+                    {% endif %}
                 {% elif m.points %}
                     {{ m.points|default:'-' }}
                 {% else %}

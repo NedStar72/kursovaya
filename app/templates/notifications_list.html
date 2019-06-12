@@ -11,6 +11,8 @@
         {% url 'course' pk=n.0.actor_object_id %}
     {% elif n.0.description == 'task' %}
         {% url 'task' pk=n.0.actor_object_id %}
+    {% elif n.0.description == 'completed_task' %}
+        {% url 'completed_task' pk=n.0.actor_object_id %}
     {% endif %}
     ">
       <div class="toast-header back_color my_border">

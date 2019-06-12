@@ -264,7 +264,7 @@ class TaskAddForm(forms.ModelForm):
                                 'multiple': True,
                             }))
 
-    is_reciprocal = forms.BooleanField(initial=False, required=False,
+    is_reciprocal = forms.BooleanField(initial=True, required=False,
                                        label='Разрешить ответы',
                                        widget=forms.CheckboxInput({
                                            'class': 'custom-control-input'
@@ -319,7 +319,7 @@ class TaskEditForm(forms.ModelForm):
                                 'multiple': True,
                             }))
 
-    is_reciprocal = forms.BooleanField(initial=False, required=False,
+    is_reciprocal = forms.BooleanField(initial=True, required=False,
                                        label='Разрешить ответы',
                                        widget=forms.CheckboxInput({
                                            'class': 'custom-control-input'

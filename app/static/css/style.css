@@ -226,3 +226,10 @@ img{
 .size-tiny{
     font-size: 0.675rem !important;
 }
+
+.r_border{
+    border-right: 1px solid #dee2e6;
+}
+.r_border:last-child{
+    border-right: none;
+}

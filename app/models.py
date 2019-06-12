@@ -379,6 +379,7 @@ def task_created(sender, instance, **kwargs):
         notify.send(sender=instance,
                     recipient=User.objects.filter(student__in=Student.objects.filter(
                         teacher_subjects__in=instance.teacher_subjects.all())),
-                    verb='Новое задание.')
+                    verb='Новое задание.',
+                    description='task')
         instance.is_created = False
         instance.save(is_notification=False)
