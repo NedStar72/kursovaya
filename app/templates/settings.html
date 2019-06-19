@@ -28,5 +28,7 @@
 <div class="mb-3 avatar_container">
     <img class="rounded-circle border" src="{{ user.avatar.url }}" alt="ava">
 </div>
-<a href="{% url 'password' %}" class="btn btn-primary btn-block mb-3">Сменить пароль</a>
+<div class="text-center">
+  <a href="{% url 'password' %}" class="btn btn-primary col-md-auto col-12 mb-3">Сменить пароль</a>
+</div>
 {% endblock %}
