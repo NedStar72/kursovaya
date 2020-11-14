@@ -218,8 +218,7 @@ class CourseAddForm(forms.ModelForm):
                                          'class': 'mdb-select',
                                          'searchable': 'Пойск',
                                      }))
-    students = forms.MultipleChoiceField(choices=[(x.user.pk, x.user.last_name + ' ' + x.user.first_name + ' '
-                                                   + x.user.patronymic) for x in models.Student.objects.all()],
+    students = forms.MultipleChoiceField(choices=tuple([(x.user.pk, x.user.last_name + ' ' + x.user.first_name + ' ' + x.user.patronymic) for x in models.Student.objects.all()]),
                                          label='Студенты',
                                          required=True,
                                          widget=forms.SelectMultiple(attrs={
